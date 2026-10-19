@@ -1,0 +1,1493 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ruta Incoterms 2020</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lilita+One&display=swap">
+<style>
+/* Layout: cabecera (título, leyenda, transporte principal, modo) + selector de Incoterms;
+   a la izquierda la maqueta 3D (semáforo arriba a la izquierda, barra de paso abajo);
+   a la derecha una línea con el Incoterm y el panel de pestañas Paso actual / ¿Quién paga? / Ficha.
+   Look: maqueta limpia y luminosa. Azul = vendedor, naranja = comprador, rojo vivo = medio de transporte principal. */
+:root{
+  --ink:#1f2a44;
+  --ink-soft:#56607a;
+  --paper:#ffffff;
+  --paper-2:#f0f3f8;
+  --bg:#e3edf6;
+  --seller:#2a6de0;
+  --buyer:#f07c12;
+  --carrier:#6b7488;
+  --main:#e8364f;
+  --off:#c5ccd8;
+  --coin:#f2b705;
+  --risk:#e0434d;
+  --good:#1f9d57;
+  --bad:#d93a45;
+  --shield:#14a37f;
+  --team1:#7a45d8;
+  --team2:#0d9488;
+  --display:"Lilita One","Arial Rounded MT Bold","Trebuchet MS",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,sans-serif;
+  color-scheme:light;
+}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.4;overflow-x:hidden}
+*{box-sizing:border-box}
+button{font-family:inherit;color:inherit}
+button:focus-visible{outline:3px solid var(--coin);outline-offset:2px}
+
+.app{display:flex;flex-direction:column;height:100%;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));padding-block:10px;gap:10px}
+
+/* Cabecera */
+.top{display:flex;align-items:center;gap:10px 12px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:10px;margin-right:auto;min-width:0}
+.brand h1{font-family:var(--display);font-weight:400;font-size:27px;margin:0;letter-spacing:.4px;line-height:1}
+.brand .yr{display:inline-block;background:var(--ink);color:var(--paper);border-radius:9px;padding:2px 8px}
+.brand small{font-size:12px;color:var(--ink-soft);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.legend{display:flex;gap:8px;flex-wrap:wrap}
+.who{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:13px;background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:3px 10px 3px 4px}
+.who i{width:16px;height:16px;border-radius:50%;display:inline-block}
+.who.s i{background:var(--seller)} .who.b i{background:var(--buyer)} .who.t i{background:var(--carrier)}
+.tabs,.modesel{display:flex;background:var(--paper);border:2px solid var(--ink);border-radius:12px;box-shadow:0 3px 0 var(--ink);overflow:hidden}
+.tabs button{border:0;background:transparent;padding:7px 15px;font-family:var(--display);font-size:17px;cursor:pointer;letter-spacing:.3px}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.modesel{align-items:stretch}
+.modesel>span{display:flex;align-items:center;padding:0 10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);border-right:2px solid var(--ink);line-height:1.1;max-width:96px}
+.modesel button{border:0;background:transparent;padding:6px 11px;font-family:var(--display);font-size:16px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;letter-spacing:.3px}
+.modesel button svg{width:20px;height:20px}
+.modesel button+button{border-left:2px solid rgba(31,42,68,.15)}
+.modesel button[aria-pressed="true"]{background:var(--main);color:#fff}
+.modesel button:disabled{opacity:.35;cursor:not-allowed}
+.iconbtn{width:40px;height:40px;display:grid;place-items:center;background:var(--paper);border:2px solid var(--ink);border-radius:11px;box-shadow:0 3px 0 var(--ink);cursor:pointer;padding:0}
+.iconbtn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.iconbtn svg{width:20px;height:20px}
+
+/* Selector */
+.picker{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 7px;scrollbar-width:thin}
+.grp{display:flex;align-items:stretch;gap:6px;background:rgba(255,255,255,.6);border:2px solid var(--ink);border-radius:13px;padding:5px;flex:none}
+.grp-tag{display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:42px;padding:0 4px;border-right:2px dashed rgba(31,42,68,.3);margin-right:2px}
+.grp-tag b{font-family:var(--display);font-size:22px;font-weight:400;line-height:1}
+.grp-tag span{font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;color:var(--ink-soft);text-align:center;line-height:1.1;max-width:78px}
+.chip{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:1px;background:var(--paper);border:2px solid var(--ink);border-radius:10px;box-shadow:0 3px 0 var(--ink);padding:4px 10px 5px;cursor:pointer;min-width:70px;text-align:left}
+.chip b{font-family:var(--display);font-weight:400;font-size:20px;line-height:1;letter-spacing:.5px}
+.chip span{font-size:11px;color:var(--ink-soft);white-space:nowrap}
+.chip em{position:absolute;top:-8px;right:-6px;font-style:normal;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:#2f86c8;color:#fff;border:2px solid var(--ink);border-radius:6px;padding:0 4px;line-height:1.5}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);transform:translateY(-2px);box-shadow:0 5px 0 var(--coin)}
+.chip[aria-pressed="true"] span{color:#cfd6e6}
+.chip:disabled{opacity:.45;cursor:not-allowed}
+
+/* Zona principal */
+.main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:12px}
+.stage{position:relative;min-height:0;border:2.5px solid var(--ink);border-radius:18px;overflow:hidden;box-shadow:0 5px 0 var(--ink);background:#d7ebfa;touch-action:none}
+#scene{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab}
+#scene:active{cursor:grabbing}
+#labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.lbl{position:absolute;left:0;top:0;white-space:nowrap;font-weight:700;font-size:12.5px;background:rgba(255,255,255,.94);border:1.5px solid var(--ink);border-radius:7px;padding:1px 7px;will-change:transform}
+.lbl.s{background:var(--seller);color:#fff;border-color:transparent}
+.lbl.b{background:var(--buyer);color:#fff;border-color:transparent}
+.lbl.t{background:var(--carrier);color:#fff;border-color:transparent}
+.lbl.risk{background:var(--risk);color:#fff;border-color:transparent}
+.lbl.cost{background:var(--coin);border-color:transparent}
+.lbl.ins{background:var(--shield);color:#fff;border-color:transparent}
+.lbl.place{font-size:13.5px;padding:2px 9px}
+.stage.clean #labels,.stage.clean #toastHost,.stage.clean .stepbar{display:none}
+
+/* Semáforo */
+.semaforo{position:absolute;left:14px;top:14px;z-index:3;display:flex;gap:8px;align-items:stretch}
+.sem-box{background:#2b344d;border:2.5px solid var(--ink);border-radius:16px;padding:8px 7px;display:flex;flex-direction:column;gap:7px;box-shadow:0 4px 0 var(--ink)}
+.light{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-size:20px;color:#fff;background:#4a546c;border:2.5px solid #1a2134;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18);transition:background .25s}
+.light.s{background:var(--seller);box-shadow:0 0 14px 2px rgba(42,109,224,.75),inset 0 -4px 0 rgba(0,0,0,.18)}
+.light.b{background:var(--buyer);box-shadow:0 0 14px 2px rgba(240,124,18,.75),inset 0 -4px 0 rgba(0,0,0,.18)}
+.light.off{background:#5d667c;color:#a9b1c3}
+.light.q{background:repeating-linear-gradient(45deg,#5d667c 0 5px,#4a546c 5px 10px);color:#dfe4ee}
+.light.flash{animation:flash .7s ease-out}
+@keyframes flash{0%{transform:scale(1.25)}100%{transform:scale(1)}}
+.sem-lab{display:flex;flex-direction:column;gap:7px;padding-block:8px}
+.sem-lab div{height:42px;display:flex;flex-direction:column;justify-content:center;background:rgba(255,255,255,.92);border:1.5px solid var(--ink);border-radius:9px;padding:0 9px;min-width:94px}
+.sem-lab b{font-family:var(--display);font-weight:400;font-size:15px;line-height:1.05;letter-spacing:.3px}
+.sem-lab span{font-size:11.5px;font-weight:700;color:var(--ink-soft);line-height:1.1}
+
+.toast{position:absolute;left:50%;top:16px;transform:translateX(-50%);max-width:min(440px,calc(100% - 300px));min-width:240px;text-align:center;background:var(--paper);border:2.5px solid var(--ink);border-radius:14px;box-shadow:0 4px 0 var(--ink);padding:8px 16px;z-index:4;animation:drop .35s cubic-bezier(.3,1.6,.6,1);font-family:var(--display);font-size:20px;letter-spacing:.3px;line-height:1.15}
+.toast.risk{color:var(--risk)} .toast.cost{color:#a77d00}
+@keyframes drop{from{transform:translate(-50%,-26px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+
+.score{position:absolute;right:14px;top:14px;display:flex;gap:8px;z-index:3}
+.sc{background:var(--paper);border:2px solid var(--ink);border-radius:11px;box-shadow:0 3px 0 var(--ink);padding:4px 12px;text-align:center;min-width:90px}
+.sc small{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft)}
+.sc b{font-family:var(--display);font-weight:400;font-size:24px;line-height:1.1;font-variant-numeric:tabular-nums}
+.sc.t1{border-color:var(--team1)} .sc.t1 small{color:var(--team1)}
+.sc.t2{border-color:var(--team2)} .sc.t2 small{color:var(--team2)}
+.sc.active{transform:translateY(-2px);box-shadow:0 5px 0 var(--ink);background:#fffbe8}
+.answerbtn{position:absolute;right:14px;top:70px;z-index:3}
+
+.bottom{position:absolute;left:12px;right:12px;bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;z-index:3;pointer-events:none}
+.bottom>*{pointer-events:auto}
+.stepbar{flex:1 1 300px;min-width:0;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.95);border:2.5px solid var(--ink);border-radius:14px;box-shadow:0 4px 0 var(--ink);padding:8px 12px}
+.stepno{flex:none;font-family:var(--display);font-size:14px;background:var(--ink);color:var(--paper);border-radius:8px;padding:3px 9px;letter-spacing:.5px;font-variant-numeric:tabular-nums}
+.stepbar h2{margin:0;font-family:var(--display);font-weight:400;font-size:20px;line-height:1.1;letter-spacing:.2px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.controls{display:flex;gap:7px;align-items:center;background:rgba(255,255,255,.95);border:2.5px solid var(--ink);border-radius:14px;box-shadow:0 4px 0 var(--ink);padding:6px;flex-wrap:wrap;margin-left:auto}
+.cbtn{height:42px;min-width:42px;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--paper-2);border:2px solid var(--ink);border-radius:11px;box-shadow:0 3px 0 var(--ink);cursor:pointer;font-weight:700;font-size:13px;padding:0 9px}
+.cbtn svg{width:20px;height:20px}
+.cbtn:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.cbtn:disabled{opacity:.4;cursor:not-allowed}
+.cbtn.play{background:var(--coin);min-width:56px}
+.cbtn[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.sep{width:2px;height:28px;background:rgba(31,42,68,.18)}
+
+/* Overlays de juego */
+.overlay{position:absolute;inset:0;display:grid;place-items:center;background:rgba(31,42,68,.5);z-index:6;padding:16px;overflow:auto}
+.card{width:min(600px,100%);background:var(--paper);border:2.5px solid var(--ink);border-radius:18px;box-shadow:0 6px 0 var(--ink);padding:18px 20px 20px;animation:drop2 .3s cubic-bezier(.3,1.5,.6,1)}
+@keyframes drop2{from{transform:translateY(-20px);opacity:0}to{transform:none;opacity:1}}
+.card h2{font-family:var(--display);font-weight:400;font-size:27px;margin:4px 0;letter-spacing:.3px;text-wrap:balance;line-height:1.15}
+.card h3{font-family:var(--display);font-weight:400;font-size:17px;margin:14px 0 6px;letter-spacing:.3px;color:var(--ink-soft)}
+.card p{margin:4px 0}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:10px}
+.opt{text-align:left;background:var(--paper-2);border:2px solid var(--ink);border-radius:13px;box-shadow:0 4px 0 var(--ink);padding:12px 14px;cursor:pointer;font-size:16px;font-weight:700;line-height:1.25}
+.opt small{display:block;font-weight:400;font-size:13px;color:var(--ink-soft);margin-top:3px}
+.opt:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.opt[aria-pressed="true"]{background:var(--coin)}
+.opt.big{font-family:var(--display);font-weight:400;font-size:24px;text-align:center;padding:14px}
+.opt.s{background:var(--seller);color:#fff}.opt.b{background:var(--buyer);color:#fff}
+.opt.ok{background:var(--good)!important;color:#fff!important}
+.opt.ok small,.opt.ko small{color:#fff}
+.opt.ko{background:var(--bad)!important;color:#fff!important}
+.opt:disabled{cursor:default}
+.opt.dim{opacity:.4}
+.qtag{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft)}
+.qtag .t{color:#fff;border-radius:6px;padding:1px 7px}
+.fb{margin-top:12px;border-radius:12px;padding:9px 12px;font-size:15px;border:2px solid var(--ink)}
+.fb.ok{background:#dcf5e6}.fb.ko{background:#fde2e4}
+.fb b{font-family:var(--display);font-weight:400;font-size:19px;display:block;letter-spacing:.3px}
+.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.btn{height:46px;padding:0 18px;border:2px solid var(--ink);border-radius:12px;box-shadow:0 4px 0 var(--ink);background:var(--coin);font-family:var(--display);font-size:18px;cursor:pointer;letter-spacing:.3px}
+.btn.alt{background:var(--paper-2)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.mini-incs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.mini-incs button{border:2px solid var(--ink);border-radius:9px;background:var(--paper);padding:4px 9px;font-family:var(--display);font-size:16px;cursor:pointer}
+.mini-incs button[aria-pressed="true"]{background:var(--coin)}
+.final{display:flex;gap:12px;justify-content:center;margin:14px 0}
+
+.loading{position:absolute;inset:0;display:grid;place-items:center;background:#d7ebfa;z-index:8;font-family:var(--display);font-size:24px;text-align:center;padding:20px}
+.loading p{font-family:var(--body);font-size:15px;max-width:44ch;margin:8px auto 0}
+
+/* Panel lateral */
+.side{min-height:0;display:flex;flex-direction:column;gap:10px}
+.box{background:var(--paper);border:2.5px solid var(--ink);border-radius:16px;box-shadow:0 4px 0 var(--ink)}
+.incbar{display:flex;align-items:baseline;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.incbar .code{font-family:var(--display);font-size:26px;line-height:1;letter-spacing:.4px}
+.incbar .mode{font-size:13px;font-weight:700;color:var(--ink-soft);line-height:1.3;min-width:0}
+.panel{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.ptabs{display:flex;border-bottom:2.5px solid var(--ink)}
+.ptabs button{flex:1;border:0;background:var(--paper-2);padding:9px 4px;font-family:var(--display);font-size:15.5px;cursor:pointer;letter-spacing:.3px}
+.ptabs button+button{border-left:2.5px solid var(--ink)}
+.ptabs button[aria-selected="true"]{background:var(--paper);box-shadow:inset 0 -4px 0 var(--coin)}
+.pbody{overflow:auto;padding:14px 16px 16px;flex:1;min-height:0}
+.now .eyebrow{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft)}
+.now h3{font-family:var(--display);font-weight:400;font-size:25px;margin:2px 0 6px;line-height:1.1;letter-spacing:.2px}
+.now p{margin:0 0 8px;font-size:16.5px;line-height:1.45}
+.callout{border-radius:11px;padding:9px 12px;font-size:16px;line-height:1.4;margin-top:8px;border-left:5px solid var(--ink);background:var(--paper-2)}
+.callout b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.callout.c{background:#fff4d1;border-left-color:var(--coin)}
+.callout.ins{background:#dcf4ec;border-left-color:var(--shield)}
+.callout.q{background:#ece6fb;border-left-color:var(--team1)}
+.callout.t{background:#eceef3;border-left-color:var(--carrier)}
+.costs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.costs li{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center;padding:5px 8px;border-radius:10px;border:2px solid transparent}
+.costs li.cur{border-color:var(--ink);background:#fffbe8}
+.costs li .lab{font-size:15px;font-weight:700;min-width:0}
+.costs li .nt{grid-column:1 / -1;font-size:13.5px;color:var(--ink-soft)}
+.tag{font-size:12.5px;font-weight:700;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.tag.s{background:var(--seller);color:#fff}.tag.b{background:var(--buyer);color:#fff}.tag.n{background:var(--off)}.tag.i{background:var(--shield);color:#fff}.tag.q{background:#e5e9f1}
+.ficha dl{margin:0;display:flex;flex-direction:column;gap:12px}
+.ficha dt{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft)}
+.ficha dd{margin:1px 0 0;font-size:15.5px;line-height:1.4}
+.ficha .ttl{font-family:var(--display);font-size:25px;line-height:1.1;letter-spacing:.3px}
+.ficha .fmt{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;font-size:12.5px;background:var(--paper-2);border-radius:8px;padding:4px 8px;display:inline-block}
+.ficha .ins{background:#dcf4ec;border-radius:10px;padding:6px 8px}
+.ficha .new{background:#fff4d1;border-radius:10px;padding:6px 8px}
+.ficha .tt{background:#eceef3;border-radius:10px;padding:6px 8px}
+.hidden-note{font-size:14px;color:var(--ink-soft)}
+.kbd{font-size:11.5px;color:var(--ink-soft);padding:2px 2px 0}
+
+@media (max-width: 980px){
+  .app{height:auto;min-height:100%}
+  .main{grid-template-columns:1fr}
+  .stage{height:70vh;min-height:480px}
+  .panel{min-height:420px}
+  .brand h1{font-size:23px}
+}
+@media (max-width: 600px){
+  .stage{height:80vh}
+  .light{width:32px;height:32px;font-size:16px}
+  .sem-lab div{height:32px;min-width:0;padding:0 6px}
+  .sem-lab span{display:none}
+  .sem-box,.sem-lab{gap:6px}
+  .stepbar h2{font-size:16px}
+  .cbtn{height:38px;min-width:38px}
+  .cbtn .txt{display:none}
+  .modesel>span{display:none}
+  .toast{top:auto;bottom:130px;max-width:calc(100% - 32px);font-size:17px}
+  .sc{min-width:70px;padding:3px 8px}
+  .answerbtn{top:64px}
+}
+@media (prefers-reduced-motion: reduce){ .toast,.card,.light.flash{animation:none} }
+</style>
+</head>
+<body>
+
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <h1>Ruta Incoterms <span class="yr">2020</span></h1>
+      <small>Reglas ICC · Incoterms® 2020</small>
+    </div>
+    <div class="legend" aria-label="Leyenda de colores">
+      <span class="who s"><i></i>Vendedor (V)</span>
+      <span class="who b"><i></i>Comprador (C)</span>
+      <span class="who t"><i></i>Transportista</span>
+    </div>
+    <div class="modesel" role="group" aria-label="Transporte principal" id="modeSel">
+      <span>Transporte principal</span>
+      <button data-m="barco" aria-pressed="false" title="Barco (Incoterms marítimos)">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 14h18l-2.6 5.2a2 2 0 0 1-1.8 1.1H7.4a2 2 0 0 1-1.8-1.1z"/><path d="M6 13V9h5V5h3v4h4v4z" opacity=".75"/></svg>Barco</button>
+      <button data-m="tren" aria-pressed="false" title="Tren">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3h12a2 2 0 0 1 2 2v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V5a2 2 0 0 1 2-2zm0 3v4h12V6zM8 13.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm8 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/><path d="M7 19h2.5l-1.5 3H5.5zM14.5 19H17l1.5 3H16z"/></svg>Tren</button>
+      <button data-m="avion" aria-pressed="false" title="Avión">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 15.5v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V8.5l-8 5v2l8-2.5V18l-2.2 1.6V21l3.7-1 3.7 1v-1.4L13 18v-5z"/></svg>Avión</button>
+    </div>
+    <div class="tabs" role="group" aria-label="Modo">
+      <button id="tabExplain" aria-pressed="true">Explicación</button>
+      <button id="tabGame" aria-pressed="false">Juego</button>
+    </div>
+    <button class="iconbtn" id="btnSound" title="Sonido activado" aria-label="Activar o desactivar sonido">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path id="sndWave" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+    </button>
+    <button class="iconbtn" id="btnFull" title="Pantalla completa" aria-label="Pantalla completa">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+    </button>
+  </header>
+
+  <nav class="picker" id="picker" aria-label="Elegir Incoterm"></nav>
+
+  <div class="main">
+    <section class="stage" id="stage">
+      <canvas id="scene" aria-label="Maqueta 3D con la ruta de la mercancía"></canvas>
+      <div id="labels"></div>
+
+      <div class="semaforo" aria-label="Semáforo: quién asume coste, riesgo y seguro en este tramo">
+        <div class="sem-box">
+          <div class="light" id="lCost">?</div>
+          <div class="light" id="lRisk">?</div>
+          <div class="light" id="lIns">–</div>
+        </div>
+        <div class="sem-lab">
+          <div><b>Coste</b><span id="tCost"></span></div>
+          <div><b>Riesgo</b><span id="tRisk"></span></div>
+          <div><b>Seguro</b><span id="tIns"></span></div>
+        </div>
+      </div>
+
+      <div id="toastHost"></div>
+      <div class="score" id="score" hidden></div>
+      <button class="btn answerbtn" id="btnAnswer" hidden>¡Ya lo sé!</button>
+
+      <div class="bottom">
+        <div class="stepbar"><span class="stepno" id="stepNo">1/11</span><h2 id="stepTitle">Carga en el almacén del vendedor</h2></div>
+        <div class="controls">
+          <button class="cbtn" id="btnRestart" title="Reiniciar (R)" aria-label="Reiniciar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v5h5"/></svg>
+          </button>
+          <button class="cbtn" id="btnPrev" title="Paso anterior (←)" aria-label="Paso anterior">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2.6v14H6zM20 5v14L9.5 12z"/></svg>
+          </button>
+          <button class="cbtn play" id="btnPlay" title="Reproducir / pausar (espacio)" aria-label="Reproducir">
+            <svg viewBox="0 0 24 24" fill="currentColor" id="playIcon"><path d="M7 4.5v15L20 12z"/></svg>
+          </button>
+          <button class="cbtn" id="btnNext" title="Paso siguiente (→)" aria-label="Paso siguiente">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.4 5H18v14h-2.6zM4 5v14l10.5-7z"/></svg>
+          </button>
+          <span class="sep" aria-hidden="true"></span>
+          <button class="cbtn" id="btnSpeed" title="Velocidad" aria-label="Velocidad"><span id="speedTxt">1×</span></button>
+          <button class="cbtn" id="btnFollow" aria-pressed="true" title="La cámara sigue a la mercancía">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg><span class="txt">Seguir</span>
+          </button>
+          <button class="cbtn" id="btnOverview" title="Ver toda la maqueta">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M2 7l6-3 8 3 6-3v13l-6 3-8-3-6 3z"/><path d="M8 4v13M16 7v13"/></svg><span class="txt">Ruta</span>
+          </button>
+          <button class="cbtn" id="btnClean" aria-pressed="false" title="Ocultar los textos de la maqueta">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span class="txt">Solo animación</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="overlay" id="ovSetup" hidden>
+        <div class="card" role="dialog" aria-labelledby="setupTitle">
+          <h2 id="setupTitle">Modo juego</h2>
+          <p>Elige el tipo de partida. Los botones de respuesta son grandes, pensados para la pizarra digital.</p>
+          <h3>Tipo de partida</h3>
+          <div class="opts" id="setType">
+            <button class="opt" data-v="route" aria-pressed="true">Ruta con preguntas<small>La mercancía se para en los puntos clave. Al responder, se enciende el semáforo.</small></button>
+            <button class="opt" data-v="guess" aria-pressed="false">¿Qué Incoterm es?<small>Mira el semáforo durante la ruta de un Incoterm misterioso y adivínalo. 5 rondas.</small></button>
+          </div>
+          <h3>Jugadores</h3>
+          <div class="opts" id="setPlayers">
+            <button class="opt" data-v="1" aria-pressed="true">Individual<small>Toda la clase juntos o una sola persona.</small></button>
+            <button class="opt" data-v="2" aria-pressed="false">Dos equipos<small>Equipo Estrella contra Equipo Rayo, por turnos.</small></button>
+          </div>
+          <div id="setIncWrap">
+            <h3>Incoterm de la ruta</h3>
+            <div class="mini-incs" id="setInc"></div>
+            <h3>Transporte principal (Incoterms multimodales)</h3>
+            <div class="mini-incs" id="setMode">
+              <button data-v="tren" aria-pressed="true">Tren</button>
+              <button data-v="avion" aria-pressed="false">Avión</button>
+              <button data-v="random" aria-pressed="false">Al azar</button>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn alt" id="btnSetupCancel">Volver</button>
+            <button class="btn" id="btnSetupGo">¡Empezar!</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="overlay" id="ovQuestion" hidden>
+        <div class="card" role="dialog" aria-labelledby="qTitle">
+          <div class="qtag" id="qTag"></div>
+          <h2 id="qTitle"></h2>
+          <div class="opts" id="qOpts"></div>
+          <div id="qFb"></div>
+          <div class="actions" id="qActions" hidden><button class="btn" id="btnQNext">Continuar</button></div>
+        </div>
+      </div>
+
+      <div class="overlay" id="ovResults" hidden>
+        <div class="card" role="dialog" aria-labelledby="rTitle">
+          <h2 id="rTitle">¡Fin de la partida!</h2>
+          <div id="rBody"></div>
+          <div class="actions">
+            <button class="btn alt" id="btnResExplain">Modo explicación</button>
+            <button class="btn" id="btnResAgain">Jugar otra vez</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="loading" id="loading"><div>Montando la maqueta…<p>Un momento, se están colocando el puerto, el tren, el avión y los camiones.</p></div></div>
+    </section>
+
+    <aside class="side">
+      <div class="box incbar"><span class="code" id="rCode">FOB</span><span class="mode" id="rMode"></span></div>
+      <div class="box panel">
+        <div class="ptabs" role="tablist">
+          <button role="tab" id="ptNow" aria-selected="true">Paso actual</button>
+          <button role="tab" id="ptCost" aria-selected="false">¿Quién paga?</button>
+          <button role="tab" id="ptFicha" aria-selected="false">Ficha</button>
+        </div>
+        <div class="pbody" id="pbody"></div>
+      </div>
+      <div class="kbd">Espacio: reproducir/pausa · ← →: pasos · R: reiniciar · Arrastra la maqueta para girarla y usa la rueda para acercar.</div>
+    </aside>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+"use strict";
+
+/* ===================== MODOS DE TRANSPORTE PRINCIPAL ===================== */
+const MODES={
+  barco:{w:'barco',veh:'el buque',vehU:'Buque',termO:'puerto de origen',termD:'puerto de destino',termOU:'Puerto de origen',termDU:'Puerto de destino'},
+  tren:{w:'tren',veh:'el tren',vehU:'Tren',termO:'terminal ferroviaria de origen',termD:'terminal ferroviaria de destino',termOU:'Terminal ferroviaria de origen',termDU:'Terminal ferroviaria de destino'},
+  avion:{w:'avión',veh:'el avión',vehU:'Avión',termO:'aeropuerto de origen',termD:'aeropuerto de destino',termOU:'Aeropuerto de origen',termDU:'Aeropuerto de destino'}
+};
+
+/* ===================== DATOS INCOTERMS 2020 ===================== */
+const V='V', C='C';
+const STEPS=[
+ {item:'carga', dur:2.8},{item:'pre', dur:3.2},{item:'expo', dur:3.0},{item:'pre', dur:4.2},{item:'desc_o', dur:2.6},
+ {item:'bordo', dur:4.0},{item:'flete', dur:6.8},{item:'desc_d', dur:4.0},{item:'impo', dur:4.8},{item:'post', dur:3.6},{item:'desc_c', dur:3.0}
+];
+const TITLES={
+ 0:'Carga en el almacén del vendedor',1:'Transporte por carretera en origen',2:'Despacho de exportación',
+ 3:{barco:'Llegada al puerto de origen',tren:'Llegada a la terminal ferroviaria',avion:'Llegada al aeropuerto de origen'},
+ 4:{barco:'Descarga al costado del buque',tren:'Descarga en la terminal ferroviaria',avion:'Descarga en el aeropuerto'},
+ 5:{barco:'Carga a bordo del buque',tren:'Carga en el tren',avion:'Carga en el avión'},
+ 6:{barco:'Transporte principal en barco',tren:'Transporte principal en tren',avion:'Transporte principal en avión'},
+ 7:{barco:'Descarga en el puerto de destino',tren:'Descarga en la terminal de destino',avion:'Descarga en el aeropuerto de destino'},
+ 8:'Despacho de importación',9:'Transporte por carretera en destino',10:'Descarga en el almacén del comprador'
+};
+const DESCS={
+ 0:'La mercancía sale del almacén del vendedor y se carga en el camión.',
+ 1:'El camión lleva la mercancía hacia la aduana y la terminal de salida.',
+ 2:'Trámites en la aduana para que la mercancía pueda salir del país.',
+ 3:{barco:'El camión entra en el puerto y se coloca bajo la grúa.',tren:'El camión entra en la terminal ferroviaria y se coloca bajo la grúa.',avion:'El camión entra en la terminal de carga del aeropuerto.'},
+ 4:{barco:'Se descarga el camión y la mercancía queda en el muelle, al costado del buque.',tren:'Se descarga el camión y la mercancía queda en el andén, junto al tren.',avion:'Se descarga el camión y la mercancía queda en la plataforma, junto al avión.'},
+ 5:{barco:'La grúa sube la mercancía a bordo del buque.',tren:'La grúa coloca la mercancía en un vagón del tren.',avion:'Una plataforma elevadora sube la mercancía a la bodega del avión.'},
+ 6:{barco:'El buque cruza el mar hasta el puerto de destino.',tren:'El tren cruza el puente hasta la terminal ferroviaria de destino.',avion:'El avión despega, vuela y aterriza en el aeropuerto de destino.'},
+ 7:{barco:'La grúa baja la mercancía al muelle del puerto de destino.',tren:'La grúa baja la mercancía del vagón al andén de la terminal de destino.',avion:'La plataforma elevadora baja la mercancía del avión.'},
+ 8:'La mercancía pasa por la aduana del país de destino: trámites y aranceles para poder entrar.',
+ 9:'Un camión lleva la mercancía hasta el almacén del comprador.',
+ 10:'La mercancía se descarga y entra en el almacén del comprador.'
+};
+const pick=(x,m)=>typeof x==='string'?x:x[m];
+const PAY_ORDER=['carga','pre','expo','desc_o','bordo','flete','desc_d','impo','post','desc_c'];
+const GROUPS={E:'Salida',F:'Transporte principal no pagado',C:'Transporte principal pagado',D:'Llegada'};
+const PLACES=['En el almacén del vendedor, sin cargar','En el almacén del vendedor, ya cargada en el vehículo del comprador','Al ponerla a disposición del porteador del comprador en la terminal de salida','Al costado del buque, en el muelle del puerto de origen','A bordo del buque, en el puerto de origen','En la terminal de destino, ya descargada','En el almacén del comprador, lista para descargar','Al entregarla al primer porteador, en el almacén del vendedor'];
+
+const INC={
+ EXW:{g:'E',en:'Ex Works',es:'En fábrica',sea:false,pay:'CCCCCCCCCC',risk:-1,place:()=>'almacén del vendedor',rp:0,tA:'C',tB:'T',
+   entrega:()=>'En el almacén del vendedor, sin cargar. El riesgo pasa en cuanto la mercancía se pone a disposición del comprador.',
+   costes:'Solo preparar y embalar la mercancía. Todo lo demás, incluida la carga y la exportación, lo paga el comprador.',
+   clave:'Mínima obligación para el vendedor.',
+   sum:'Todo pasa al comprador en el almacén del vendedor, sin cargar: incluso la carga y la exportación son suyas.'},
+ FCAF:{name:'FCA Fábrica',base:'FCA',sub:'Fábrica',g:'F',en:'Free Carrier · en las instalaciones del vendedor',es:'Franco porteador en fábrica',sea:false,pay:'VCVCCCCCCC',risk:0,place:()=>'almacén del vendedor',rp:1,tA:'C',tB:'T',
+   entrega:()=>'En las instalaciones del vendedor: la entrega se produce cuando la mercancía está cargada en el vehículo que envía el comprador. El vendedor carga.',
+   costes:'Cargar la mercancía en su almacén y el despacho de exportación. El transporte lo paga el comprador.',
+   extra:['Las dos FCA','En FCA, si el lugar es la fábrica del vendedor, el vendedor carga. Si es otro lugar, entrega en su camión sin descargar.'],
+   novedad:'Novedad 2020: el comprador puede recoger con sus propios medios de transporte, y en envíos por mar puede pactarse un conocimiento de embarque «a bordo».',
+   clave:'En fábrica, el vendedor carga.',
+   sum:'El riesgo pasa en el almacén del vendedor una vez cargada. El vendedor carga y hace la exportación, pero el transporte lo paga el comprador.'},
+ FCAT:{name:'FCA Terminal',base:'FCA',sub:'Terminal',g:'F',en:'Free Carrier · en otro lugar',es:'Franco porteador en terminal',sea:false,pay:'VVVCCCCCCC',risk:3,place:m=>MODES[m].termO,rp:2,tA:'V',tB:'T',
+   entrega:m=>`En otro lugar convenido (aquí, la ${m==='avion'?'terminal de carga del aeropuerto':'terminal ferroviaria'} de origen): la mercancía se pone a disposición del porteador del comprador sobre el camión del vendedor, lista para descargar.`,
+   costes:'Transporte hasta la terminal y despacho de exportación. La descarga ya es del comprador.',
+   extra:['Las dos FCA','En FCA, si el lugar es la fábrica del vendedor, el vendedor carga. Si es otro lugar, entrega en su camión sin descargar. Aunque el vendedor contrate un transportista para llegar a la terminal, el riesgo pasa en la terminal.'],
+   novedad:'Novedad 2020: el vendedor puede llevar la mercancía con sus propios medios de transporte, y en envíos por mar puede pactarse un conocimiento de embarque «a bordo».',
+   clave:'En otro lugar, el vendedor entrega sin descargar.',
+   sum:'El vendedor lleva la mercancía en su camión hasta la terminal y la entrega lista para descargar. Ahí pasan riesgo y costes.'},
+ FAS:{g:'F',en:'Free Alongside Ship',es:'Franco al costado del buque',sea:true,pay:'VVVVCCCCCC',risk:4,place:()=>'puerto de carga',rp:3,tA:'T',tB:'T',
+   entrega:()=>'Al costado del buque, en el muelle del puerto de carga convenido.',
+   costes:'Hasta dejar la mercancía en el muelle, al costado del buque, con el despacho de exportación hecho.',
+   clave:'Típico de mercancía a granel o carga pesada.',
+   sum:'El riesgo y los costes pasan al dejar la mercancía en el muelle, al costado del buque.'},
+ FOB:{g:'F',en:'Free On Board',es:'Franco a bordo',sea:true,pay:'VVVVVCCCCC',risk:5,place:()=>'puerto de carga',rp:4,tA:'T',tB:'T',
+   entrega:()=>'A bordo del buque, en el puerto de carga convenido.',
+   costes:'Hasta que la mercancía está a bordo, con el despacho de exportación hecho.',
+   clave:'El flete (y el seguro, si lo quiere) lo contrata el comprador.',
+   sum:'El riesgo y los costes pasan juntos cuando la mercancía está a bordo en origen.'},
+ CFR:{g:'C',en:'Cost and Freight',es:'Coste y flete',sea:true,pay:'VVVVVVCCCC',risk:5,place:()=>'puerto de destino',rp:4,tA:'T',tB:'T',
+   entrega:()=>'A bordo del buque en el puerto de carga: el riesgo pasa en origen.',
+   costes:'Hasta el puerto de destino convenido: el vendedor paga el flete principal.',
+   extra:['Varios buques','Si hay un barco de enlace antes del buque principal (por ejemplo, Hong Kong → Shanghái → Southampton), el riesgo pasa al entregar la mercancía al primer porteador, es decir, en el primer barco, salvo que se pacte otro puerto. Si la mercancía se entrega en una terminal de contenedores, la regla adecuada es CPT, no CFR.'],
+   clave:'Dos puntos críticos: el riesgo pasa en origen y el coste llega hasta destino.',
+   sum:'El riesgo pasa a bordo en origen, pero el vendedor paga el flete hasta destino. Sin seguro obligatorio.'},
+ CIF:{g:'C',en:'Cost, Insurance and Freight',es:'Coste, seguro y flete',sea:true,pay:'VVVVVVCCCC',risk:5,place:()=>'puerto de destino',rp:4,ins:'C',insEnd:7,tA:'T',tB:'T',
+   entrega:()=>'A bordo del buque en el puerto de carga: el riesgo pasa en origen.',
+   costes:'Flete y seguro hasta el puerto de destino convenido.',
+   extra:['Varios buques','Si hay un barco de enlace antes del buque principal (por ejemplo, Hong Kong → Shanghái → Southampton), el riesgo pasa en el primer barco, salvo que se pacte otro puerto. Si la mercancía se entrega en una terminal de contenedores, la regla adecuada es CIP, no CIF.'],
+   clave:'Es CFR más un seguro obligatorio.',
+   sum:'Como CFR (riesgo a bordo en origen, flete hasta destino) más un seguro obligatorio del 110 % con Cláusulas C.'},
+ CPT:{g:'C',en:'Carriage Paid To',es:'Transporte pagado hasta',sea:false,pay:'VVVVVVVCVC',risk:0,place:()=>'almacén del comprador',rp:7,tA:'T',tB:'T',
+   entrega:()=>'Al primer porteador contratado por el vendedor: aquí, el transportista que recoge la mercancía en el almacén del vendedor. Si hay varios porteadores y no se pacta otro punto, el riesgo pasa al entregarla al primero.',
+   costes:'Todo el transporte hasta el destino convenido (aquí, el almacén del comprador), incluidas las descargas que figuren en su contrato de transporte. La importación es del comprador.',
+   extra:['Primer porteador',"Si el vendedor lleva la mercancía en su propio camión hasta la terminal, ese camión no es un porteador: el riesgo pasa en la terminal, al entregarla al primer transportista. Si se quiere que el riesgo pase en otro punto, más tarde (por ejemplo, en un puerto o aeropuerto) o antes, hay que pactarlo en el contrato."],
+   clave:'El riesgo pasa con el primer porteador; el coste llega hasta destino.',
+   sum:'El riesgo pasa al entregar la mercancía al primer porteador en el almacén del vendedor, pero el vendedor paga el transporte hasta destino. Sin seguro obligatorio.'},
+ CIP:{g:'C',en:'Carriage and Insurance Paid To',es:'Transporte y seguro pagados hasta',sea:false,pay:'VVVVVVVCVC',risk:0,place:()=>'almacén del comprador',rp:7,ins:'A',insEnd:9,tA:'T',tB:'T',
+   entrega:()=>'Al primer porteador contratado por el vendedor: aquí, el transportista que recoge la mercancía en el almacén del vendedor. Si hay varios porteadores y no se pacta otro punto, el riesgo pasa al entregarla al primero.',
+   costes:'Transporte y seguro hasta el destino convenido (aquí, el almacén del comprador), incluidas las descargas que figuren en su contrato de transporte. La importación es del comprador.',
+   extra:['Primer porteador',"Si el vendedor lleva la mercancía en su propio camión hasta la terminal, ese camión no es un porteador: el riesgo pasa en la terminal, al entregarla al primer transportista. Si se quiere que el riesgo pase en otro punto, más tarde (por ejemplo, en un puerto o aeropuerto) o antes, hay que pactarlo en el contrato."],
+   novedad:'Novedad 2020: CIP exige ahora Cláusulas A (cobertura amplia). En Incoterms 2010 bastaban las Cláusulas C.',
+   clave:'Como CPT, más un seguro obligatorio con cobertura amplia.',
+   sum:'Como CPT (riesgo con el primer porteador en origen, transporte pagado hasta destino) más un seguro obligatorio del 110 % con Cláusulas A.'},
+ DAP:{g:'D',en:'Delivered at Place',es:'Entregada en lugar',sea:false,pay:'VVVVVVVCVC',risk:9,place:()=>'almacén del comprador',rp:6,tA:'T',tB:'T',
+   entrega:()=>'En el lugar de destino convenido, sobre el vehículo que llega y lista para descargar.',
+   costes:'Todo el transporte hasta destino. No paga la importación ni la descarga final.',
+   extra:['Transbordos','Los transbordos intermedios (terminal, aeropuerto) no cambian el riesgo: es del vendedor hasta el lugar de destino convenido.'],
+   novedad:'Novedad 2020: se admite que el vendedor use su propio transporte.',
+   clave:'El vendedor lleva la mercancía hasta destino, pero la importación es del comprador.',
+   sum:'El vendedor paga y arriesga hasta el almacén del comprador, pero la importación la paga el comprador.'},
+ DPU:{g:'D',en:'Delivered at Place Unloaded',es:'Entregada en lugar descargada',sea:false,pay:'VVVVVVVCCC',risk:7,place:m=>MODES[m].termD,rp:5,tA:'T',tB:'T',
+   entrega:m=>`En el lugar de destino convenido, ya descargada. Aquí: la ${MODES[m].termD}.`,
+   costes:'Transporte hasta destino y descarga. No paga la importación.',
+   extra:['Transbordos','Los transbordos intermedios no cambian el riesgo: es del vendedor hasta que descarga en el lugar convenido.'],
+   novedad:'Novedad 2020: sustituye a DAT. El lugar de entrega puede ser cualquiera, no solo una terminal.',
+   clave:'Único Incoterm en el que el vendedor descarga en destino.',
+   sum:'El vendedor paga y arriesga hasta destino y además descarga la mercancía. La importación es del comprador.'},
+ DDP:{g:'D',en:'Delivered Duty Paid',es:'Entregada derechos pagados',sea:false,pay:'VVVVVVVVVC',risk:9,place:()=>'almacén del comprador',rp:6,tA:'T',tB:'T',
+   entrega:()=>'En el lugar de destino convenido, despachada de importación y lista para descargar.',
+   costes:'Todo, incluidos los trámites y aranceles de importación. No la descarga final.',
+   extra:['Transbordos','Los transbordos intermedios no cambian el riesgo: es del vendedor hasta el lugar de destino convenido.'],
+   novedad:'Novedad 2020: se admite que el vendedor use su propio transporte.',
+   clave:'Máxima obligación para el vendedor.',
+   sum:'El vendedor lo paga todo, incluso los aranceles de importación, hasta el almacén del comprador.'}
+};
+const ORDER=['EXW','FCAF','FCAT','FAS','FOB','CFR','CIF','CPT','CIP','DAP','DPU','DDP'];
+const CONFUSE={EXW:['FCAF','FCAT','FAS'],FCAF:['EXW','FCAT','CPT'],FCAT:['FCAF','CPT','FAS'],FAS:['FOB','FCAT','CFR'],FOB:['FAS','CFR','FCAT'],CFR:['CIF','FOB','CPT'],CIF:['CFR','CIP','FOB'],CPT:['CIP','FCAF','CFR'],CIP:['CPT','CIF','DAP'],DAP:['DPU','DDP','CPT'],DPU:['DAP','DDP','CIP'],DDP:['DAP','DPU','EXW']};
+const disp=c=>INC[c].name||c;
+const baseCode=c=>INC[c].base||c;
+
+function payer(code,item){ if(item==='seguro') return INC[code].ins? V : null; return INC[code].pay[PAY_ORDER.indexOf(item)]; }
+function stepPayer(code,s){ return payer(code,STEPS[s].item); }
+function costEnd(code){ let e=-1; for(let s=0;s<STEPS.length;s++) if(stepPayer(code,s)===V) e=s; return e; }
+function riskOwner(code,s){ return s<=INC[code].risk? V : C; }
+function insActive(code,s){ const d=INC[code]; return !!d.ins && s>d.risk && s<=d.insEnd; }
+const WHO={V:'vendedor',C:'comprador'}, WHO_U={V:'Vendedor',C:'Comprador'};
+const isCPT=c=>c==='CPT'||c==='CIP';
+
+function itemLabel(id,m){
+  const L={carga:'Carga en el almacén del vendedor',pre:'Transporte por carretera en origen',expo:'Despacho de exportación',desc_o:'Descarga en la terminal de salida',
+    bordo:`Carga en ${MODES[m].veh}`,flete:`Transporte principal (${MODES[m].w})`,seguro:'Seguro de transporte',desc_d:'Descarga en la terminal de destino',
+    impo:'Despacho de importación y aranceles',post:'Transporte por carretera en destino',desc_c:'Descarga en el almacén del comprador'};
+  return L[id];
+}
+const ITEM_IDS=['carga','pre','expo','desc_o','bordo','flete','seguro','desc_d','impo','post','desc_c'];
+
+function itemNote(code,item){
+  const d=INC[code];
+  if(isCPT(code)){
+    if(item==='carga') return 'El vendedor carga la mercancía en el camión del transportista que ha contratado (primer porteador). En ese momento pasa el riesgo.';
+    if(item==='pre') return 'Lo paga el vendedor, pero el riesgo ya es del comprador.';
+    if(item==='desc_d') return 'Del vendedor si la descarga está incluida en su contrato de transporte (lo habitual en un transporte hasta destino). Si no, del comprador.';
+    if(item==='post') return 'El destino convenido es el almacén del comprador, así que este camión también lo paga el vendedor.';
+    if(item==='desc_c') return 'Del comprador, salvo que esté incluida en el contrato de transporte del vendedor.';
+  }
+  if(item==='desc_d' && (code==='CFR'||code==='CIF')) return 'Del comprador, salvo que la descarga esté incluida en el contrato de transporte.';
+  if(item==='desc_o' && code==='FCAT') return 'El vendedor entrega en su camión, listo para descargar.';
+  if(item==='carga' && code==='EXW') return 'El vendedor no está obligado a cargar.';
+  if(item==='carga' && code==='FCAF') return 'En FCA en fábrica, el vendedor carga.';
+  if(item==='desc_d' && code==='DPU') return 'En DPU el vendedor está obligado a descargar.';
+  if(item==='desc_c' && (code==='DAP'||code==='DDP')) return 'Del comprador, salvo que esté incluida en el contrato de transporte del vendedor.';
+  if(item==='impo' && code==='DDP') return 'Único Incoterm en que la importación es del vendedor.';
+  if(item==='expo' && code==='EXW') return 'Único Incoterm en que la exportación es del comprador.';
+  if(item==='expo' && code==='FCAF') return 'El riesgo ya es del comprador, pero la exportación sigue siendo del vendedor.';
+  if(item==='seguro'){
+    if(d.ins==='A') return 'Obligatorio para el vendedor: ICC (A), cobertura amplia, salvo pacto en contrario. Mínimo el 110 % del precio del contrato, en su moneda, desde la entrega hasta el lugar de destino convenido.';
+    if(d.ins==='C') return 'Obligatorio para el vendedor: ICC (C), cobertura mínima (se puede pactar más). Mínimo el 110 % del precio del contrato, en su moneda, desde la carga a bordo hasta el puerto de destino.';
+    if(d.g==='C') return 'No obligatorio. El riesgo del viaje es del comprador: si quiere seguro, lo contrata él.';
+    if(d.g==='D') return 'No obligatorio. El vendedor soporta el riesgo hasta destino, así que le interesa asegurar.';
+    return 'No obligatorio. Quien soporta el riesgo decide si asegura.';
+  }
+  return '';
+}
+function stepNote(code,s,m){
+  const d=INC[code], veh=MODES[m].veh;
+  const N={
+   EXW:{0:'En EXW el vendedor solo pone la mercancía a disposición en su almacén, sin cargarla. Cargar el camión del comprador ya corresponde al comprador.',2:'En EXW incluso el despacho de exportación es cosa del comprador.'},
+   FCAF:{0:'Entrega FCA en fábrica: el vendedor carga la mercancía en el camión que envía el comprador. En cuanto queda cargada, el riesgo pasa al comprador.',1:'Este transporte lo contrata y lo paga el comprador.',2:'Aunque el riesgo ya es del comprador, el despacho de exportación lo hace y lo paga el vendedor.'},
+   FCAT:{1:'El vendedor lleva la mercancía en su propio camión hasta la terminal.',3:`Entrega FCA en terminal: el vendedor pone la mercancía a disposición del porteador del comprador, sobre su propio camión y lista para descargar.`,4:'Descargar el camión del vendedor en la terminal ya corresponde al comprador.'},
+   FAS:{4:'Entrega FAS: la mercancía queda en el muelle, al costado del buque. Aquí pasa el riesgo.'},
+   FOB:{5:'Entrega FOB: el riesgo pasa cuando la mercancía está a bordo del buque.'},
+   CFR:{5:'El riesgo pasa a bordo en el puerto de origen, igual que en FOB.',6:'El vendedor paga el flete hasta el puerto de destino, pero el riesgo del viaje ya es del comprador.'},
+   CIF:{5:'El riesgo pasa a bordo en el puerto de origen, igual que en FOB.',6:'El vendedor paga el flete y el seguro, pero el riesgo del viaje ya es del comprador: el seguro le protege a él.'},
+   CPT:{0:'Entrega CPT: el vendedor carga la mercancía en el camión del transportista que él ha contratado, el primer porteador. En ese momento el riesgo pasa al comprador.',1:'El vendedor paga este camión, pero el riesgo ya es del comprador.',6:`El vendedor paga el transporte en ${MODES[m].w}, pero el riesgo es del comprador desde el almacén del vendedor.`,9:'El destino convenido es el almacén del comprador, así que el vendedor paga también este camión.'},
+   CIP:{0:'Entrega CIP: el vendedor carga la mercancía en el camión del transportista que él ha contratado, el primer porteador. En ese momento el riesgo pasa al comprador y empieza el seguro.',1:'El vendedor paga este camión, pero el riesgo ya es del comprador: el seguro le protege a él.',6:`El vendedor paga el transporte en ${MODES[m].w} y el seguro, pero el riesgo es del comprador desde el almacén del vendedor.`,9:'El destino convenido es el almacén del comprador: el vendedor paga este camión y el seguro sigue cubriendo hasta la llegada.'},
+   DAP:{8:'La importación (trámites y aranceles) corresponde al comprador.',9:'Entrega DAP: la mercancía llega al lugar convenido lista para descargar. Aquí pasa el riesgo.',10:'Descargar en destino corresponde al comprador.'},
+   DPU:{7:'Entrega DPU: el vendedor descarga la mercancía en el lugar convenido. Es el único Incoterm con descarga a cargo del vendedor. En 2020 sustituye a DAT.'},
+   DDP:{8:'En DDP el vendedor paga también el despacho de importación y los aranceles.',9:'Entrega DDP: el riesgo pasa en el almacén del comprador, con la mercancía despachada y lista para descargar.'}
+  };
+  let n=(N[code]&&N[code][s])||'';
+  if(!n && s===7 && (code==='CFR'||code==='CIF')) n=itemNote(code,'desc_d');
+  if(!n && s===7 && isCPT(code)) n=itemNote(code,'desc_d');
+  if(!n && (s===4||s===5||s===6) && d.g==='D') n=`Transbordo en la terminal: el riesgo sigue siendo del vendedor.`;
+  if(!n && s===6 && !d.sea) n=`Este Incoterm sirve para cualquier modo de transporte. Aquí el transporte principal va en ${MODES[m].w} y los camiones hacen los tramos de origen y destino.`;
+  return n;
+}
+function gapText(code){ const d=INC[code]; if(isCPT(code)) return 'El riesgo pasa con el primer porteador en el almacén del vendedor, pero el vendedor paga el transporte hasta el almacén del comprador.'; if(d.g==='C') return 'Grupo C: el riesgo pasa en origen, pero el vendedor paga el transporte hasta destino.'; if(code==='FCAF') return 'El riesgo pasa al cargar en la fábrica, pero el vendedor aún paga la exportación.'; return ''; }
+
+/* ===================== ESTADO ===================== */
+const st={inc:'CPT',mm:'tren',step:0,t:0,playing:false,hold:0,speed:1,follow:true,tab:'now',sound:true,game:null,clean:false};
+const SPEEDS=[1,1.5,2,0.75];
+const $=id=>document.getElementById(id);
+const curMode=()=>INC[st.inc].sea?'barco':st.mm;
+
+/* ===================== SELECTOR ===================== */
+const picker=$('picker');
+(function(){
+  let html='';
+  ['E','F','C','D'].forEach(g=>{
+    html+=`<div class="grp"><div class="grp-tag"><b>${g}</b><span>${GROUPS[g]}</span></div>`;
+    ORDER.filter(c=>INC[c].g===g).forEach(c=>{
+      const d=INC[c];
+      html+=`<button class="chip" data-inc="${c}" aria-pressed="false" title="${d.en} · ${d.es}"><b>${d.base||c}</b><span>${d.sub||d.es}</span>${d.sea?'<em>Marítimo</em>':''}</button>`;
+    });
+    html+='</div>';
+  });
+  picker.innerHTML=html;
+  picker.addEventListener('click',e=>{const b=e.target.closest('.chip'); if(!b||b.disabled) return; selectInc(b.dataset.inc,true);});
+})();
+$('modeSel').addEventListener('click',e=>{const b=e.target.closest('button'); if(!b||b.disabled) return; st.mm=b.dataset.m; restart(); beep('coin');});
+function renderModeSel(){
+  const sea=INC[st.inc].sea, m=curMode();
+  [...$('modeSel').querySelectorAll('button')].forEach(b=>{
+    const k=b.dataset.m; b.setAttribute('aria-pressed',String(k===m));
+    b.disabled=!!st.game||(sea?k!=='barco':k==='barco');
+    b.title=sea?(k==='barco'?'Incoterm marítimo: siempre en barco':'Este Incoterm es solo marítimo'):(k==='barco'?'Los Incoterms multimodales se muestran en tren o avión':(k==='tren'?'Tren':'Avión'));
+  });
+}
+
+/* ===================== SONIDO ===================== */
+let actx=null;
+function beep(kind){
+  if(!st.sound) return;
+  try{
+    if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)();
+    const seq={ok:[[660,.09],[880,.09],[1320,.16]],ko:[[220,.18],[170,.25]],risk:[[520,.08],[390,.08],[520,.14]],coin:[[988,.06],[1319,.12]],end:[[523,.1],[659,.1],[784,.1],[1047,.25]]}[kind]||[[600,.1]];
+    let t=actx.currentTime;
+    seq.forEach(([f,d])=>{const o=actx.createOscillator(),g=actx.createGain();o.type=kind==='ko'?'sawtooth':'triangle';o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.12,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(actx.destination);o.start(t);o.stop(t+d+.02);t+=d*.9;});
+  }catch(e){}
+}
+$('btnSound').addEventListener('click',()=>{st.sound=!st.sound;$('sndWave').style.display=st.sound?'':'none';$('btnSound').title=st.sound?'Sonido activado':'Sonido desactivado';});
+$('btnFull').addEventListener('click',()=>{try{ if(document.fullscreenElement) document.exitFullscreen(); else (document.documentElement.requestFullscreen?document.documentElement.requestFullscreen():Promise.reject()).catch(()=>{}); }catch(e){}});
+
+/* ===================== 3D: DIORAMA ===================== */
+if(typeof THREE==='undefined'){
+  $('loading').innerHTML='<div>No se ha podido cargar el motor 3D<p>Esta página necesita conexión a Internet para descargar la librería 3D. Comprueba la conexión y vuelve a cargar la página.</p></div>';
+  return;
+}
+const canvas=$('scene'), stage=$('stage');
+let renderer;
+try{ renderer=new THREE.WebGLRenderer({canvas,antialias:true}); }
+catch(e){ $('loading').innerHTML='<div>Este navegador no puede mostrar 3D<p>Prueba con Chrome, Edge o Firefox actualizados y con la aceleración por hardware activada.</p></div>'; return; }
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+const scene=new THREE.Scene();
+scene.background=new THREE.Color('#d7ebfa');
+const camera=new THREE.PerspectiveCamera(38,1,0.5,1200);
+
+scene.add(new THREE.HemisphereLight('#ffffff','#bccbdc',0.8));
+const sun=new THREE.DirectionalLight('#fff8ea',0.66);
+sun.position.set(40,95,55); sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048);
+Object.assign(sun.shadow.camera,{left:-125,right:125,top:70,bottom:-70,near:10,far:280});
+sun.shadow.bias=-0.0008; sun.shadow.camera.updateProjectionMatrix();
+scene.add(sun);
+
+const RED='#e8364f', YEL='#ffc61a', NAVY='#24306e';
+const matCache={};
+function M(color){ if(!matCache[color]) matCache[color]=new THREE.MeshLambertMaterial({color}); return matCache[color]; }
+const INKMAT=new THREE.MeshBasicMaterial({color:'#1f2a44',side:THREE.BackSide});
+function mesh(geo,mat,x,y,z,parent,shadow=true){const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);if(shadow){m.castShadow=true;m.receiveShadow=true;}(parent||scene).add(m);return m;}
+function box(w,h,d,color,x,y,z,parent){return mesh(new THREE.BoxGeometry(w,h,d),typeof color==='string'?M(color):color,x,y,z,parent);}
+function cyl(rt,rb,h,seg,color,x,y,z,parent){return mesh(new THREE.CylinderGeometry(rt,rb,h,seg),typeof color==='string'?M(color):color,x,y,z,parent);}
+function outline(m,s){const o=new THREE.Mesh(m.geometry,INKMAT);o.scale.setScalar(s||1.06);m.add(o);return o;}
+function textTex(text,{w=512,h=96,bg='#ffffff',fg='#1f2a44',size=56}={}){
+  const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');
+  g.fillStyle=bg;g.fillRect(0,0,w,h);
+  g.fillStyle=fg;g.font=`${size}px "Lilita One", "Arial Rounded MT Bold", Arial, sans-serif`;g.textAlign='center';g.textBaseline='middle';g.fillText(text,w/2,h/2+3);
+  const t=new THREE.CanvasTexture(c);t.anisotropy=4;return t;
+}
+const signs=[];
+function sign(text,w,h,x,y,z,ry,opts,parent){
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:textTex(text,opts)}));
+  m.position.set(x,y,z);m.rotation.y=ry||0;(parent||scene).add(m);signs.push([m,text,opts]);return m;
+}
+try{document.fonts.load('56px "Lilita One"').then(()=>signs.forEach(([m,t,o])=>{const old=m.material.map;m.material.map=textTex(t,o);m.material.needsUpdate=true;old.dispose();})).catch(()=>{});}catch(e){}
+let seed=11; function rnd(){seed=(seed*16807)%2147483647;return (seed-1)/2147483646;}
+const group=()=>{const g=new THREE.Group();scene.add(g);return g;};
+
+/* --- Constantes de la ruta --- */
+const HS=0.9;
+const RZ=-4, ALZ=-2.6, SHIP_Z=3, PLANE_Z=5, LIFT=7.4, BED=-0.8, BED_Y=1.0+HS;
+const TA0=-75.2, TA_CUS=-61, TA_PIER=-19.2, TB_PIER=20.8, TB_CUS=55, TB_END=74, LOAD_O=-20, LOAD_D=20, SEA_Y=-1.0;
+const BZ=44, ALT=20;
+const VEH={barco:{dy:0.6+HS+0.07,off:0},tren:{dy:1.05+HS,off:0},avion:{dy:1.85+HS,off:-4}};
+
+/* --- Tablero --- */
+box(236,1.4,BZ*2+6,'#4b5670',0,-4.1,0);
+box(230,0.25,BZ*2+1,'#d8dee8',0,-3.3,0);
+[-1,1].forEach(sd=>{
+  const cx=sd*70;
+  box(80,2.6,BZ*2,'#c9a27a',cx,-1.9,0);
+  box(80,0.6,BZ*2,'#a9d98b',cx,-0.3,0);
+  box(70,0.06,4.6,'#a9b1c2',sd>0?65:-65,0.03,RZ);
+  for(let x=(sd>0?30:-100)+3;x<(sd>0?100:-30)-1;x+=4) box(1.8,0.02,0.22,'#ffffff',x,0.07,RZ);
+});
+const seaGroup=new THREE.Group(); scene.add(seaGroup);
+const midLand=new THREE.Group(); scene.add(midLand);
+box(60,2.0,BZ*2,'#2f8fcf',0,-2.2,0,seaGroup);
+box(60,2.6,BZ*2,'#c9a27a',0,-1.9,0,midLand);
+box(60,0.6,BZ*2,'#a9d98b',0,-0.3,0,midLand);
+box(5,0.1,BZ*2,'#47abe8',0,0.02,0,midLand);
+const seaGeo=new THREE.PlaneGeometry(60,BZ*2,36,52); seaGeo.rotateX(-Math.PI/2);
+const seaBase=seaGeo.attributes.position.array.slice();
+const sea=new THREE.Mesh(seaGeo,new THREE.MeshPhongMaterial({color:'#47abe8',flatShading:true,shininess:50,specular:'#ffffff'}));
+sea.position.y=SEA_Y; sea.receiveShadow=true; seaGroup.add(sea);
+
+/* --- Muelles / andenes (comunes) --- */
+function pier(cx){
+  box(18,0.8,5,'#dfe3ea',cx,-0.38,RZ);
+  box(18,0.05,0.25,YEL,cx,0.03,-1.62);
+  for(let x=cx-8;x<=cx+8;x+=4){cyl(0.32,0.32,2.2,8,'#a7adb9',x,-1.5,-6.2);cyl(0.32,0.32,2.2,8,'#a7adb9',x,-1.5,-1.8);}
+}
+pier(-21); pier(21);
+
+/* --- Almacenes --- */
+function warehouse(cx,owner){
+  const dir=cx<0?1:-1, face=cx+dir*8, col=owner===V?'#2a6de0':'#f07c12';
+  box(16,7,16,'#f6f7f9',cx,3.5,RZ);
+  box(16.2,0.7,16.2,col,cx,0.35,RZ);
+  const sh=new THREE.Shape(); sh.moveTo(-8.8,0);sh.lineTo(8.8,0);sh.lineTo(0,3.2);sh.lineTo(-8.8,0);
+  mesh(new THREE.ExtrudeGeometry(sh,{depth:17,bevelEnabled:false}),M(col),cx,7,RZ-8.5);
+  const door=new THREE.Mesh(new THREE.PlaneGeometry(5.4,5),new THREE.MeshBasicMaterial({color:'#3a4462'}));
+  door.position.set(face+dir*0.02,2.5,RZ); door.rotation.y=dir*Math.PI/2; scene.add(door);
+  sign(owner===V?'VENDEDOR':'COMPRADOR',9,1.7,cx,5.2,RZ+8.04,0,{bg:col,fg:'#ffffff'});
+}
+warehouse(-88,V); warehouse(88,C);
+
+/* --- Aduanas --- */
+function customs(x){
+  box(3.4,2.8,3.2,'#f6f7f9',x+2,1.4,-8.4);
+  box(3.9,0.45,3.7,'#2e8b57',x+2,3.02,-8.4);
+  sign('ADUANA',3.2,0.75,x+2,2.15,-6.78,0,{bg:'#2e8b57',fg:'#ffffff',size:64});
+  box(0.5,1.4,0.5,'#56607a',x,0.7,-6.8);
+  const piv=new THREE.Group(); piv.position.set(x,1.25,-6.8); scene.add(piv);
+  for(let i=0;i<6;i++) box(0.24,0.24,0.8,i%2?'#ffffff':'#e0434d',0,0,0.6+i*0.8,piv);
+  return piv;
+}
+const barO=customs(-58), barD=customs(58);
+
+/* --- Decoración --- */
+const CCOL=['#9fb3c8','#b8c4d2','#8fb0a8','#c4ccd6'];
+function containers(x0,z0){ for(let i=0;i<3;i++)for(let j=0;j<2;j++){const h=1+Math.floor(rnd()*2);for(let k=0;k<h;k++) box(2.6,1.3,5.2,CCOL[Math.floor(rnd()*CCOL.length)],x0+i*3,0.65+k*1.32,z0+j*5.6);} }
+containers(-46,10); containers(40,10);
+function tree(x,z,s){
+  cyl(0.22*s,0.28*s,1.4*s,6,'#a5845f',x,0.7*s,z);
+  const t=new THREE.Mesh(new THREE.SphereGeometry(1.35*s,10,8),M(rnd()<.5?'#6cbf5a':'#58ad4c'));
+  t.position.set(x,2.3*s,z); t.castShadow=true; scene.add(t);
+}
+/* árboles, casas, flores y montañas en las orillas */
+function blocked(x,z){const ax=Math.abs(x);
+  if(ax<31||ax>113||Math.abs(z)>42) return true;
+  if(z>-9.5&&z<1.5) return true;                       // carretera
+  if(ax>77&&ax<99&&z>-14&&z<6) return true;             // almacenes
+  if(ax>53&&ax<66&&z>-12&&z<-4.5) return true;          // aduanas
+  if(ax>36&&ax<54&&z>6&&z<22) return true;              // contenedores
+  if(ax>30&&ax<38&&z>9&&z<17) return true;              // torre
+  if(z<-29) return true;                                // montañas
+  return false;}
+for(let k=0,n=0;k<400&&n<70;k++){const x=(rnd()<.5?-1:1)*(31+rnd()*82), z=-42+rnd()*84; if(blocked(x,z)) continue; tree(x,z,0.55+rnd()*0.6); n++;}
+const FLOW=['#ffffff','#ffd84d','#ff9ec4','#c9a0ff'];
+for(let k=0,n=0;k<500&&n<60;k++){const x=(rnd()<.5?-1:1)*(31+rnd()*82), z=-28+rnd()*70; if(blocked(x,z)) continue;
+  const c=FLOW[Math.floor(rnd()*FLOW.length)]; for(let q=0;q<4;q++){const f=new THREE.Mesh(new THREE.SphereGeometry(0.22,6,4),M(c)); f.position.set(x+(rnd()-.5)*1.6,0.18,z+(rnd()-.5)*1.6); scene.add(f);} n++;}
+function house(x,z,roof,ry){const g=new THREE.Group(); g.position.set(x,0,z); g.rotation.y=ry||0; scene.add(g);
+  box(3.6,2.4,3,'#fbf7f0',0,1.2,0,g);
+  const sh=new THREE.Shape(); sh.moveTo(-2.1,0);sh.lineTo(2.1,0);sh.lineTo(0,1.6);sh.lineTo(-2.1,0);
+  mesh(new THREE.ExtrudeGeometry(sh,{depth:3.4,bevelEnabled:false}),M(roof),0,2.4,-1.7,g);
+  box(0.8,1.3,0.06,'#6d5a48',0.6,0.65,1.52,g); box(0.7,0.6,0.06,'#9fc6e6',-0.9,1.4,1.52,g); return g;}
+[[-66,30,'#b5835a'],[-58,36,'#6d7a99',0.4],[-102,14,'#b5835a',-0.3],[62,34,'#6d7a99'],[70,28,'#b5835a',0.5],[104,12,'#6d7a99',0.2]].forEach(([x,z,c,r])=>house(x,z,c,r));
+function mountain(x,z,r,h){const m=new THREE.Mesh(new THREE.ConeGeometry(r,h,7),M(rnd()<.5?'#86a882':'#7c9c86')); m.position.set(x,h/2-0.1,z); m.castShadow=true; m.receiveShadow=true; scene.add(m);
+  const cap=new THREE.Mesh(new THREE.ConeGeometry(r*0.36,h*0.36,7),M('#ffffff')); cap.position.set(x,h-h*0.18-0.08,z); scene.add(cap);}
+[[-104,-37,6.5,14],[-92,-38,5,10],[-80,-37.5,6,12.5],[-64,-38,5,9.5],[-48,-37.5,6,13],[-36,-38.5,4.5,8.5],[38,-38.5,4.5,10],[50,-37.5,6,14],[66,-38,5.5,13],[82,-37.5,6.5,18],[96,-38,6,15],[108,-37,6,17]].forEach(a=>mountain(...a));
+/* rocas y faro en el mar */
+[[-10,24,1.6],[11,34,2],[-4,38,1.2],[13,-20,1.4]].forEach(([x,z,r])=>{const rk=new THREE.Mesh(new THREE.DodecahedronGeometry(r,0),M('#9aa1ad')); rk.position.set(x,SEA_Y+0.3,z); rk.castShadow=true; seaGroup.add(rk);});
+(function(){const x=-10,z=24; cyl(0.75,1,5,10,'#ffffff',x,SEA_Y+3.6,z,seaGroup); cyl(0.8,0.8,1,10,'#e0434d',x,SEA_Y+2.6,z,seaGroup); cyl(0.8,0.8,1,10,'#e0434d',x,SEA_Y+4.6,z,seaGroup); cyl(0.9,0.9,1,10,'#ffd84d',x,SEA_Y+6.6,z,seaGroup); cyl(1.1,0.3,0.8,10,'#3a4462',x,SEA_Y+7.5,z,seaGroup);})();
+/* paisaje central (solo con tren) */
+(function(){const mid=midLand;
+  const T=[[-24,14],[-18,22],[-9,30],[-26,34],[-14,40],[9,16],[16,26],[24,14],[26,36],[8,38],[-8,-14],[-22,-16],[-14,-26],[-26,-34],[8,-16],[20,-14],[14,-28],[26,-34],[-6,-38],[6,-32],[-27,24],[18,40]];
+  T.forEach(([x,z])=>{const s=0.6+rnd()*0.6; cyl(0.22*s,0.28*s,1.4*s,6,'#a5845f',x,0.7*s,z,mid); const t=new THREE.Mesh(new THREE.SphereGeometry(1.35*s,10,8),M(rnd()<.5?'#6cbf5a':'#58ad4c')); t.position.set(x,2.3*s,z); t.castShadow=true; mid.add(t);});
+  for(let r=0;r<6;r++) box(10,0.12,1.4,r%2?'#e3c46a':'#d4b155',-16,0.06,-31+r*1.6,mid);
+  for(let k=0;k<30;k++){const x=-28+rnd()*56, z=(rnd()<.5?1:-1)*(10+rnd()*30); if(Math.abs(x)<4) continue; const f=new THREE.Mesh(new THREE.SphereGeometry(0.22,6,4),M(FLOW[k%4])); f.position.set(x,0.18,z); mid.add(f);}
+  const h=new THREE.Group(); h.position.set(16,0,-34); mid.add(h); box(3.6,2.4,3,'#fbf7f0',0,1.2,0,h); const sh=new THREE.Shape(); sh.moveTo(-2.1,0);sh.lineTo(2.1,0);sh.lineTo(0,1.6);sh.lineTo(-2.1,0); mesh(new THREE.ExtrudeGeometry(sh,{depth:3.4,bevelEnabled:false}),M('#b5835a'),0,2.4,-1.7,h);
+})();
+[[-6,16],[8,-14],[2,30]].forEach(([x,z])=>cyl(0.45,0.6,1.1,8,'#e0434d',x,SEA_Y+0.25,z,seaGroup));
+
+/* --- Rótulos de terminal por modo --- */
+const signGroups={barco:group(),tren:group(),avion:group()};
+[['barco','PUERTO','#2f86c8'],['tren','TERMINAL FERROVIARIA','#56607a'],['avion','AEROPUERTO','#7a45d8']].forEach(([m,txt,col])=>{
+  [-1,1].forEach(sd=>{
+    const g=signGroups[m];
+    cyl(0.12,0.12,3.2,6,'#56607a',sd*29.5,1.6,-7.6,g);
+    sign(txt,7.2,1.3,sd*29.5,3.4,-7.5,0,{bg:col,fg:'#ffffff',size:m==='tren'?44:58},g);
+  });
+});
+
+/* --- Grúas (barco y tren) --- */
+const craneGroup=group();
+function crane(x){
+  const Y='#8d97ad';
+  [[-1.6,-6.4],[1.6,-6.4],[-1.6,-1.6],[1.6,-1.6]].forEach(([dx,z])=>box(0.45,9.4,0.45,Y,x+dx,4.7,z,craneGroup));
+  box(0.45,0.55,15,Y,x-1.6,9.5,-0.4,craneGroup); box(0.45,0.55,15,Y,x+1.6,9.5,-0.4,craneGroup);
+  box(3.6,0.45,0.45,Y,x,9.5,-6.4,craneGroup); box(3.6,0.45,0.45,Y,x,9.5,-1.6,craneGroup); box(3.6,0.45,0.45,Y,x,9.5,6.8,craneGroup);
+  box(3.4,1.5,2.4,'#56607a',x,10.5,-7,craneGroup);
+  const trolley=box(3.2,0.45,1.4,'#56607a',x,9.0,0,craneGroup);
+  const cable=mesh(new THREE.CylinderGeometry(0.05,0.05,1,6),M('#1f2a44'),x,8,0,craneGroup,false);
+  const hook=box(2.1,0.28,2.1,'#56607a',x,7.5,0,craneGroup);
+  return {x,trolley,cable,hook};
+}
+const craneO=crane(LOAD_O), craneD=crane(LOAD_D);
+function setHook(cr,z,y){cr.trolley.position.z=z;cr.hook.position.set(cr.x,y,z);const top=8.78,len=Math.max(0.1,top-y);cr.cable.scale.y=len;cr.cable.position.set(cr.x,y+len/2,z);}
+
+/* --- BARCO --- */
+const barcoGroup=group();
+const ship=new THREE.Group(); barcoGroup.add(ship);
+let shipFlag;
+(function(){
+  const sh=new THREE.Shape(); sh.moveTo(-7.4,-2.5);sh.lineTo(4.6,-2.5);sh.quadraticCurveTo(7.4,-1.6,8.2,0);sh.quadraticCurveTo(7.4,1.6,4.6,2.5);sh.lineTo(-7.4,2.5);sh.lineTo(-7.4,-2.5);
+  const g1=new THREE.ExtrudeGeometry(sh,{depth:1.0,bevelEnabled:false}); g1.rotateX(-Math.PI/2);
+  const g2=new THREE.ExtrudeGeometry(sh,{depth:1.2,bevelEnabled:false}); g2.rotateX(-Math.PI/2);
+  mesh(g1,M(NAVY),0,-0.6,0,ship); const up=mesh(g2,M(RED),0,0.4,0,ship); outline(up,1.02);
+  box(14.4,0.1,4.6,'#8d97ad',0.2,1.62,0,ship);
+  const brg=box(2.6,3.4,4.4,'#aab3c3',-5.6,3.3,0,ship); outline(brg,1.03);
+  box(2.62,0.5,4.42,'#1f2a44',-5.6,3.9,0,ship);
+  box(2.7,0.5,4.5,NAVY,-5.6,4.3,0,ship);
+  cyl(0.5,0.6,2,10,YEL,-6.4,5.8,0,ship); cyl(0.52,0.52,0.4,10,'#1f2a44',-6.4,6.9,0,ship);
+  [[3.0,-1.25],[3.0,1.25],[5.0,-1.25],[-3.0,1.25],[-3.0,-1.25]].forEach(([x,z],i)=>box(1.9,1.25,2.35,CCOL[i%4],x,2.3,z,ship));
+  cyl(0.07,0.07,3,6,'#e9ecf5',-7.0,3.1,1.8,ship);
+  shipFlag=box(1.4,0.9,0.06,'#2a6de0',-6.25,4.2,1.8,ship);
+})();
+ship.position.set(LOAD_O,SEA_Y,SHIP_Z);
+const wake=new THREE.Mesh(new THREE.PlaneGeometry(10,3),new THREE.MeshBasicMaterial({color:'#ffffff',transparent:true,opacity:0}));
+wake.rotation.x=-Math.PI/2; barcoGroup.add(wake);
+
+/* --- TREN: puente, vías y convoy --- */
+const trenGroup=group();
+box(8,0.3,3.6,'#cfd5df',0,-0.05,SHIP_Z,trenGroup);
+box(8,0.6,0.25,RED,0,0.35,SHIP_Z-1.75,trenGroup); box(8,0.6,0.25,RED,0,0.35,SHIP_Z+1.75,trenGroup);
+[-3.6,3.6].forEach(x=>box(0.8,1.2,3.8,'#a7adb9',x,0.3,SHIP_Z,trenGroup));
+[-0.72,0.72].forEach(dz=>box(92,0.14,0.16,'#56607a',0,0.08,SHIP_Z+dz,trenGroup));
+for(let x=-45.5;x<=45.5;x+=1.4) box(0.4,0.07,2.2,'#9a7b5a',x,0.035,SHIP_Z,trenGroup);
+[-46,46].forEach(x=>box(0.6,1,2.2,RED,x,0.5,SHIP_Z,trenGroup));
+const train=new THREE.Group(); trenGroup.add(train);
+let trainFlag;
+(function(){
+  function bogies(cx,len){ box(len,0.35,2,'#2b344d',cx,0.72,0,train); [-1,1].forEach(sx=>[-0.75,0.75].forEach(z=>{const w=cyl(0.42,0.42,0.25,12,'#1f2a44',cx+sx*(len/2-1),0.42,z,train);w.rotation.x=Math.PI/2;})); }
+  // locomotora
+  bogies(8.6,5.6);
+  const loco=box(5.6,2.5,2.4,RED,8.6,2.15,0,train); outline(loco,1.03);
+  box(0.12,0.9,2.0,'#1f2a44',11.43,2.8,0,train);
+  box(0.14,0.45,2.44,YEL,11.45,1.45,0,train);
+  box(4.2,0.35,2.0,'#ffffff',8.3,3.55,0,train);
+  cyl(0.06,0.06,1.3,6,'#e9ecf5',6.6,4.3,-0.9,train);
+  trainFlag=box(1,0.6,0.06,'#2a6de0',7.1,4.75,-0.9,train);
+  // vagón de la mercancía
+  bogies(0,6); box(6,0.3,2.3,RED,0,0.9,0,train);
+  // otros vagones
+  [-7,-14].forEach((cx,i)=>{ bogies(cx,6); box(6,0.3,2.3,RED,cx,0.9,0,train); box(5.6,1.9,2.2,CCOL[i],cx,2.0,0,train); });
+})();
+train.position.set(LOAD_O,0,SHIP_Z);
+
+/* --- AVIÓN: plataformas, torre, avión y elevadores --- */
+const avionGroup=group();
+[-1,1].forEach(sd=>{
+  box(22,0.8,13,'#c9cfd9',sd*19,-0.4,3.5,avionGroup);
+  for(let x=-8;x<=8;x+=4) box(2.4,0.04,0.3,'#ffffff',sd*19+x,0.03,9.2,avionGroup);
+  box(22,0.04,0.25,YEL,sd*19,0.03,-1.2,avionGroup);
+  cyl(0.9,1.1,8,10,'#f3f5f8',sd*34,4,13,avionGroup);
+  const cab=cyl(1.8,1.4,1.8,10,'#3a4462',sd*34,8.9,13,avionGroup);
+  cyl(1.9,1.9,0.3,10,'#ffffff',sd*34,9.95,13,avionGroup);
+});
+const plane=new THREE.Group(); avionGroup.add(plane);
+let planeFlag;
+(function(){
+  const fus=new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,12,18),M(RED)); fus.rotation.z=Math.PI/2; fus.position.set(0,2.8,0); fus.castShadow=true; plane.add(fus); outline(fus,1.03);
+  const nose=new THREE.Mesh(new THREE.SphereGeometry(1.5,18,12),M(RED)); nose.scale.set(1.7,1,1); nose.position.set(6,2.8,0); nose.castShadow=true; plane.add(nose);
+  box(0.9,0.5,1.6,'#1f2a44',7.4,3.5,0,plane);
+  const tail=new THREE.Mesh(new THREE.ConeGeometry(1.5,4,18),M(RED)); tail.rotation.z=Math.PI/2; tail.position.set(-8,3.0,0); tail.castShadow=true; plane.add(tail);
+  box(11,0.32,3.06,'#ffffff',0,3.25,0,plane);
+  box(4,0.3,13,'#f3f5f8',-1,2.2,0,plane);
+  box(2.6,3,0.3,RED,-8.4,4.7,0,plane);
+  box(2.2,0.25,5.2,'#f3f5f8',-8.6,3.2,0,plane);
+  [-3.4,3.4].forEach(z=>{const e=new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.55,2.2,12),M('#8d97ad')); e.rotation.z=Math.PI/2; e.position.set(-0.2,1.6,z); plane.add(e);});
+  [[4.5,0],[-1.2,1.4],[-1.2,-1.4]].forEach(([x,z])=>{box(0.2,1,0.2,'#56607a',x,0.9,z,plane);const w=cyl(0.38,0.38,0.3,12,'#1f2a44',x,0.38,z,plane);w.rotation.x=Math.PI/2;});
+  planeFlag=box(2.4,0.6,0.36,'#2a6de0',-8.6,6.25,0,plane);
+})();
+plane.position.set(LOAD_O-4,0,PLANE_Z);
+function loader(x){
+  const plat=box(2.6,0.25,6.6,YEL,x,0.12,0,avionGroup);
+  const col=box(1.2,1,1.2,'#56607a',x,0.5,0,avionGroup);
+  return {plat,col};
+}
+const loaderO=loader(LOAD_O), loaderD=loader(LOAD_D);
+function setLoader(L,p){ L.plat.position.y=p-0.125; L.col.scale.y=Math.max(0.01,p-0.25); L.col.position.y=Math.max(0.005,(p-0.25)/2); L.col.visible=p>0.4; }
+
+let sceneMode='';
+function setSceneMode(m){
+  if(m===sceneMode) return; sceneMode=m;
+  barcoGroup.visible=m==='barco'; trenGroup.visible=m==='tren'; avionGroup.visible=m==='avion';
+  seaGroup.visible=m!=='tren'; midLand.visible=m==='tren';
+  craneGroup.visible=m!=='avion';
+  Object.keys(signGroups).forEach(k=>signGroups[k].visible=k===m);
+}
+
+/* --- Camiones (cabina: azul vendedor, naranja comprador, gris transportista) --- */
+const TRUCK_COL={V:'#2a6de0',C:'#f07c12',T:'#8e98ab'};
+function truck(){
+  const g=new THREE.Group(); scene.add(g);
+  box(5.2,0.4,2,'#56607a',0.1,0.75,0,g);
+  const cab=box(1.8,1.9,2.2,'#8e98ab',1.75,1.85,0,g); outline(cab,1.05);
+  box(0.06,0.75,1.8,'#9fc6e6',2.66,2.2,0,g);
+  box(3.3,0.26,2.3,'#c3c9d4',-0.8,0.87,0,g);
+  const wheels=[];
+  [[1.7,1.08],[1.7,-1.08],[-1.0,1.08],[-1.0,-1.08],[-2.0,1.08],[-2.0,-1.08]].forEach(([x,z])=>{const w=cyl(0.46,0.46,0.36,14,'#2b344d',x,0.46,z,g);w.rotation.x=Math.PI/2;wheels.push(w);});
+  cyl(0.06,0.06,1.6,6,'#e9ecf5',1.1,3.5,-0.9,g);
+  const flag=box(1.0,0.65,0.06,'#2a6de0',1.6,4.0,-0.9,g);
+  g.userData={wheels,flag,cab,lastX:0};
+  return g;
+}
+const truckA=truck(), truckB=truck();
+truckA.position.set(TA0,0,RZ); truckB.position.set(TB_PIER,0,RZ);
+
+/* --- Mercancía --- */
+const crateTex=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');g.fillStyle='#ffffff';g.fillRect(0,0,128,128);g.fillStyle='#d9dde5';for(let i=0;i<4;i++)g.fillRect(0,i*32+28,128,5);g.strokeStyle='#b9bfcb';g.lineWidth=12;g.strokeRect(6,6,116,116);return new THREE.CanvasTexture(c);})();
+const crateMat=new THREE.MeshLambertMaterial({color:'#d6dae3',map:crateTex});
+const crate=new THREE.Mesh(new THREE.BoxGeometry(HS*2,HS*2,HS*2),crateMat); crate.castShadow=true; scene.add(crate); outline(crate,1.06);
+const ring=new THREE.Mesh(new THREE.TorusGeometry(1.55,0.14,8,36),new THREE.MeshBasicMaterial({color:'#2a6de0'})); ring.rotation.x=Math.PI/2; scene.add(ring);
+const bubble=new THREE.Mesh(new THREE.SphereGeometry(2.05,24,16),new THREE.MeshBasicMaterial({color:'#14a37f',transparent:true,opacity:0.2,depthWrite:false})); scene.add(bubble);
+const bubbleWire=new THREE.Mesh(new THREE.IcosahedronGeometry(2.1,1),new THREE.MeshBasicMaterial({color:'#14a37f',wireframe:true,transparent:true,opacity:0.55})); bubble.add(bubbleWire);
+
+/* --- Personajes --- */
+function person(color,x,z){
+  const g=new THREE.Group(); g.position.set(x,0,z); scene.add(g);
+  cyl(0.62,0.82,2.2,14,color,0,1.2,0,g);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.62,16,12),M('#f1d3b8')); head.position.y=2.95; head.castShadow=true; g.add(head);
+  [-0.21,0.21].forEach(ex=>{const e=new THREE.Mesh(new THREE.SphereGeometry(0.08,8,6),M('#1f2a44'));e.position.set(ex,3.0,0.56);g.add(e);});
+  cyl(0.64,0.64,0.28,16,color,0,3.42,0,g); box(0.8,0.08,0.45,color,0,3.3,0.6,g);
+  const arm=new THREE.Group(); arm.position.set(0.78,2.0,0); g.add(arm); cyl(0.14,0.14,1.1,8,color,0,-0.5,0,arm);
+  g.userData={arm,phase:rnd()*6};
+  return g;
+}
+const seller=person('#2a6de0',-76,-10), buyer=person('#f07c12',76,-10);
+
+/* --- Marcadores --- */
+function marker(color,topGeo){
+  const g=new THREE.Group(); scene.add(g);
+  cyl(0.1,0.1,5,8,'#ffffff',0,2.5,0,g);
+  const top=new THREE.Mesh(topGeo,M(color)); top.position.y=5.6; top.castShadow=true; g.add(top); outline(top,1.1);
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(1.0,1.2,0.3,16),M(color)); base.position.y=0.15; g.add(base);
+  g.userData.top=top; return g;
+}
+const riskMk=marker('#e0434d',new THREE.OctahedronGeometry(0.9));
+const coinGeo=new THREE.CylinderGeometry(0.95,0.95,0.28,24); coinGeo.rotateX(Math.PI/2);
+const costMk=marker('#f2b705',coinGeo);
+
+/* --- Partículas --- */
+const parts=[];
+function burst(pos,color){
+  for(let i=0;i<22;i++){const p=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.3,0.3),new THREE.MeshBasicMaterial({color:i%3?color:'#f2b705',transparent:true}));p.position.copy(pos);p.userData={v:new THREE.Vector3((rnd()-.5)*8,4+rnd()*6,(rnd()-.5)*8),life:1};scene.add(p);parts.push(p);}
+}
+
+/* ===================== POSICIONES DETERMINISTAS ===================== */
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), lerp=(a,b,t)=>a+(b-a)*t;
+const E=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+const seg=(t,a,b)=>clamp((t-a)/(b-a),0,1);
+function hop(a,b,t,h){return {x:lerp(a.x,b.x,t),y:lerp(a.y,b.y,t)+4*h*t*(1-t),z:lerp(a.z,b.z,t)};}
+const GY=HS;
+function cs(s,t,m){
+  m=m||curMode(); const DY=VEH[m].dy, air=m==='avion';
+  const o={tA:TA0,tB:TB_PIER,main:LOAD_O,alt:0,c:null,hO:{z:ALZ,y:7.6},hD:{z:SHIP_Z,y:7.6},lO:0,lD:0,bO:0,bD:0,spin:0,inside:false};
+  if(s===1)o.tA=lerp(TA0,TA_CUS,E(t));else if(s===2)o.tA=TA_CUS;else if(s===3)o.tA=lerp(TA_CUS,TA_PIER,E(t));else if(s>=4)o.tA=TA_PIER;
+  if(s===8)o.tB=lerp(TB_PIER,TB_CUS,E(seg(t,.3,.7)));else if(s===9)o.tB=lerp(TB_CUS,TB_END,E(t));else if(s>=10)o.tB=TB_END;
+  if(s===6){o.main=lerp(LOAD_O,LOAD_D,E(t)); if(air) o.alt=ALT*Math.pow(Math.sin(Math.PI*seg(t,.06,.94)),0.85);} else if(s>6)o.main=LOAD_D;
+  if(s===2)o.bO=E(seg(t,.25,.6));else if(s===3)o.bO=1-E(seg(t,.45,.75));
+  if(s===8)o.bD=E(seg(t,.72,.95));else if(s===9)o.bD=1-E(seg(t,.3,.55));
+  if(s>=5)o.hO.z=SHIP_Z; if(s>7)o.hD.z=ALZ;
+  const MZ=air?PLANE_Z:SHIP_Z;
+  switch(s){
+    case 0:o.c=hop({x:-78.9,y:GY,z:RZ},{x:TA0+BED,y:BED_Y,z:RZ},E(t),1.6);o.spin=E(t);break;
+    case 1:case 2:case 3:o.c={x:o.tA+BED,y:BED_Y,z:RZ};break;
+    case 4:o.c=hop({x:TA_PIER+BED,y:BED_Y,z:RZ},{x:LOAD_O,y:GY,z:ALZ},E(t),1.4);o.spin=E(t);break;
+    case 5:
+      if(air){const a=E(seg(t,0,.45)),b=E(seg(t,.5,1));o.c={x:LOAD_O,y:GY+(DY-GY)*a,z:lerp(ALZ,MZ,b)};o.lO=o.c.y-HS;o.inside=b>0.6;}
+      else{const a=E(seg(t,0,.3)),b=E(seg(t,.3,.7)),d=E(seg(t,.7,1));o.c={x:LOAD_O,y:GY+(LIFT-GY)*a-(LIFT-DY)*d,z:lerp(ALZ,MZ,b)};o.hO={z:o.c.z,y:o.c.y+HS+0.15};}
+      break;
+    case 6:o.c={x:o.main,y:DY+o.alt,z:MZ};o.inside=air;if(air)o.lO=(DY-HS)*(1-E(seg(t,0,.2)));break;
+    case 7:
+      if(air){const a=E(seg(t,0,.25)),b=E(seg(t,.3,.65)),d=E(seg(t,.7,1));o.c={x:LOAD_D,y:DY-(DY-GY)*d,z:lerp(MZ,ALZ,b)};o.lD=t<.3?(DY-HS)*a:o.c.y-HS;o.inside=b<0.4;}
+      else{const a=E(seg(t,0,.3)),b=E(seg(t,.3,.7)),d=E(seg(t,.7,1));o.c={x:LOAD_D,y:DY+(LIFT-DY)*a-(LIFT-GY)*d,z:lerp(MZ,ALZ,b)};o.hD={z:o.c.z,y:o.c.y+HS+0.15};}
+      break;
+    case 8:o.c=t<.3?hop({x:LOAD_D,y:GY,z:ALZ},{x:TB_PIER+BED,y:BED_Y,z:RZ},E(seg(t,0,.3)),1.4):{x:o.tB+BED,y:BED_Y,z:RZ};o.spin=E(seg(t,0,.3));break;
+    case 9:o.c={x:o.tB+BED,y:BED_Y,z:RZ};break;
+    default:o.c=t<.55?hop({x:TB_END+BED,y:BED_Y,z:RZ},{x:80.9,y:GY,z:RZ},E(seg(t,0,.55)),1.4):{x:lerp(80.9,85,E(seg(t,.55,1))),y:GY,z:RZ};o.spin=E(seg(t,0,.55));
+  }
+  return o;
+}
+function pointAt(s){ return s<0? cs(0,0).c : cs(s,1).c; }
+
+/* ===================== ETIQUETAS ===================== */
+const labelsHost=$('labels');
+const labels=[];
+function addLabel(cls,text,getPos){const el=document.createElement('div');el.className='lbl '+cls;el.textContent=text;labelsHost.appendChild(el);const L={el,getPos,visible:true};labels.push(L);return L;}
+const v3=new THREE.Vector3();
+let placePos=[0,0,0];
+const L_place=addLabel('place','',()=>v3.set(placePos[0],placePos[1],placePos[2]));
+addLabel('s','Vendedor',()=>v3.set(seller.position.x,4.6,seller.position.z));
+addLabel('b','Comprador',()=>v3.set(buyer.position.x,4.6,buyer.position.z));
+const L_risk=addLabel('risk','Riesgo',()=>v3.set(riskMk.position.x,riskMk.position.y+7.2,riskMk.position.z));
+const L_cost=addLabel('cost','Fin de costes',()=>v3.set(costMk.position.x,costMk.position.y+7.2,costMk.position.z));
+const L_ins=addLabel('ins','Seguro 110 %',()=>v3.set(crate.position.x,crate.position.y+(lastInside?5.2:3.2),crate.position.z));
+const L_truck=addLabel('t','Transportista',()=>v3.set(truckLblX,4.9,RZ));
+let truckLblX=0, lastInside=false;
+let W=1,H=1;
+function screenOf(pos){const p=pos.clone().project(camera);return {x:(p.x+1)/2*W,y:(1-p.y)/2*H,ok:p.z<1&&p.z>-1};}
+function updateLabels(){
+  for(const L of labels){
+    if(!L.visible){L.el.hidden=true;continue;}
+    const s=screenOf(L.getPos());
+    if(!s.ok||s.x<-80||s.x>W+80||s.y<-20||s.y>H+40){L.el.hidden=true;continue;}
+    L.el.hidden=false; L.el.style.transform=`translate(${s.x.toFixed(1)}px,${s.y.toFixed(1)}px) translate(-50%,-100%)`;
+  }
+}
+function placeInfo(s,m){
+  const M_=MODES[m];
+  const P={0:[-88,12.2,RZ,'Almacén del vendedor'],2:[-56,4.8,-8.4,'Aduana de exportación'],3:[-20,m==='avion'?7:12.2,RZ,M_.termOU],4:[-20,m==='avion'?7:12.2,RZ,M_.termOU],5:[-20,m==='avion'?7:12.2,RZ,M_.termOU],7:[20,m==='avion'?7:12.2,RZ,M_.termDU],8:[60,4.8,-8.4,'Aduana de importación'],10:[88,12.2,RZ,'Almacén del comprador']};
+  return P[s]||null;
+}
+const TRUCK_TXT={V:['s','Camión del vendedor'],C:['b','Camión del comprador'],T:['t','Transportista']};
+
+/* ===================== CÁMARA ===================== */
+const cam={target:new THREE.Vector3(-70,1,RZ),goal:new THREE.Vector3(-70,1,RZ),r:62,rGoal:62,theta:0.18,phi:0.86,phiGoal:0.86,thetaGoal:0.18};
+function placeCamera(){const sp=Math.sin(cam.phi);camera.position.set(cam.target.x+cam.r*sp*Math.sin(cam.theta),cam.target.y+cam.r*Math.cos(cam.phi),cam.target.z+cam.r*sp*Math.cos(cam.theta));camera.lookAt(cam.target);}
+const pointers=new Map(); let pinch0=0, r0=0;
+canvas.addEventListener('pointerdown',e=>{try{canvas.setPointerCapture(e.pointerId);}catch(_){}pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===2){const [a,b]=[...pointers.values()];pinch0=Math.hypot(a.x-b.x,a.y-b.y);r0=cam.rGoal;}});
+canvas.addEventListener('pointermove',e=>{
+  const p=pointers.get(e.pointerId); if(!p) return;
+  if(pointers.size===1){cam.thetaGoal-=(e.clientX-p.x)*0.005;cam.phiGoal=clamp(cam.phiGoal-(e.clientY-p.y)*0.004,0.35,1.25);}
+  p.x=e.clientX;p.y=e.clientY;
+  if(pointers.size===2){const [a,b]=[...pointers.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);if(pinch0>0)cam.rGoal=clamp(r0*pinch0/d,18,300);}
+});
+const endPtr=e=>{pointers.delete(e.pointerId);pinch0=0;};
+canvas.addEventListener('pointerup',endPtr);canvas.addEventListener('pointercancel',endPtr);
+canvas.addEventListener('wheel',e=>{e.preventDefault();cam.rGoal=clamp(cam.rGoal*(1+e.deltaY*0.0012),18,300);},{passive:false});
+function setFollow(on){st.follow=on;$('btnFollow').setAttribute('aria-pressed',String(on));}
+function followView(){setFollow(true);cam.rGoal=W<600?74:62;cam.phiGoal=0.86;cam.thetaGoal=0.18;}
+$('btnFollow').addEventListener('click',()=>{ if(st.follow) setFollow(false); else followView(); });
+$('btnOverview').addEventListener('click',()=>{setFollow(false);cam.goal.set(0,0,0);const asp=Math.max(0.5,W/H);cam.rGoal=clamp(205/asp*1.2+60,170,300);cam.phiGoal=0.82;cam.thetaGoal=0;});
+$('btnClean').addEventListener('click',()=>{st.clean=!st.clean;stage.classList.toggle('clean',st.clean);$('btnClean').setAttribute('aria-pressed',String(st.clean));});
+
+/* --- Cielo con el nombre «Nico» hecho de nubes --- */
+let skyTex=null, skyTimer=null;
+function buildSky(){
+  const cw=1600, ch=Math.round(clamp(cw*H/W,500,2600));
+  const c=document.createElement('canvas'); c.width=cw; c.height=ch; const g=c.getContext('2d');
+  const gr=g.createLinearGradient(0,0,0,ch); gr.addColorStop(0,'#8fcdf3'); gr.addColorStop(0.45,'#c6e6fa'); gr.addColorStop(1,'#e3f1fb'); g.fillStyle=gr; g.fillRect(0,0,cw,ch);
+  const puff=(x,y,r,a)=>{const rg=g.createRadialGradient(x,y,0,x,y,r); rg.addColorStop(0,`rgba(255,255,255,${a})`); rg.addColorStop(0.6,`rgba(255,255,255,${a*0.8})`); rg.addColorStop(1,'rgba(255,255,255,0)'); g.fillStyle=rg; g.beginPath(); g.arc(x,y,r,0,Math.PI*2); g.fill();};
+  let sd=7; const rr=()=>{sd=(sd*16807)%2147483647;return (sd-1)/2147483646;};
+   const t=new THREE.CanvasTexture(c); t.repeat.set(0.98,1); t.offset.set(0.01,0);
+  if(skyTex) skyTex.dispose(); skyTex=t; scene.background=t;
+}
+/* Nubes «Nico» (arriba a la derecha) y nubes normales (arriba a la izquierda):
+   planos unidos a la cámara y situados al fondo, detrás de toda la maqueta, así que las montañas los tapan. */
+const SKY_D=1100;
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+scene.add(camera);
+function cloudCanvas(cw,ch,draw){const c=document.createElement('canvas'); c.width=cw; c.height=ch; const g=c.getContext('2d');
+  let sd=5; const rr=()=>{sd=(sd*16807)%2147483647;return (sd-1)/2147483646;};
+  const puff=(x,y,r,a)=>{const rg=g.createRadialGradient(x,y,0,x,y,r); rg.addColorStop(0,`rgba(255,255,255,${a})`); rg.addColorStop(0.6,`rgba(255,255,255,${a*0.85})`); rg.addColorStop(1,'rgba(255,255,255,0)'); g.fillStyle=rg; g.beginPath(); g.arc(x,y,r,0,Math.PI*2); g.fill();};
+  draw(g,puff,rr); return c;}
+function nicoCanvas(){return cloudCanvas(900,300,(g,puff,rr)=>{
+  const tc=document.createElement('canvas'); tc.width=900; tc.height=300; const tg=tc.getContext('2d');
+  const fs=216; tg.fillStyle='#000'; tg.font=`${fs}px "Lilita One", "Arial Rounded MT Bold", Arial, sans-serif`; tg.textAlign='center'; tg.textBaseline='middle'; tg.fillText('Nico',450,156);
+  const data=tg.getImageData(0,0,900,300).data, step=14;
+  const pts=[]; for(let y=0;y<300;y+=step) for(let x=0;x<900;x+=step) if(data[(y*900+x)*4+3]>128) pts.push([x+(rr()-.5)*step*0.6,y+(rr()-.5)*step*0.6]);
+  pts.forEach(([x,y])=>{g.fillStyle='rgba(110,150,195,0.13)'; g.beginPath(); g.arc(x,y+step*0.8,step*1.3,0,Math.PI*2); g.fill();});
+  pts.forEach(([x,y])=>puff(x,y,step*(1.45+rr()*0.7),0.7));});}
+function plainCloudsCanvas(){return cloudCanvas(900,300,(g,puff,rr)=>{
+  [[190,120,1.15],[520,80,0.85],[700,190,0.7]].forEach(([cx,cy,sc])=>{for(let k=0;k<9;k++) puff(cx+(rr()-.5)*220*sc,cy+(rr()-.5)*40*sc,(45+rr()*40)*sc,0.75);});});}
+function skyPlane(){const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({transparent:true,depthWrite:false,opacity:0.92}));
+  m.renderOrder=-10; m.frustumCulled=false; camera.add(m); return m;}
+const nicoPlane=skyPlane(), leftClouds=skyPlane();
+const skyBase={nx:0,ny:0,lx:0,ly:0,w:1,h:1};
+function buildNico(){
+  [[nicoPlane,nicoCanvas()],[leftClouds,plainCloudsCanvas()]].forEach(([m,c])=>{const old=m.material.map; m.material.map=new THREE.CanvasTexture(c); m.material.needsUpdate=true; if(old) old.dispose();});
+}
+function placeSkyPlanes(){
+  const h=2*SKY_D*Math.tan(camera.fov*Math.PI/360), w=h*camera.aspect;
+  const nw=Math.min(w*0.3,h*0.95), nh=nw/3, lw=Math.min(w*0.3,h*0.95), lh=lw/3;
+  nicoPlane.scale.set(nw,nh,1); leftClouds.scale.set(lw,lh,1);
+  skyBase.nx=w/2-nw/2-w*0.03; skyBase.ny=h/2-nh/2-h*0.12; skyBase.lx=-w/2+lw/2+w*0.18; skyBase.ly=h/2-lh/2-h*0.03; skyBase.w=w; skyBase.h=h;
+  nicoPlane.position.set(skyBase.nx,skyBase.ny,-SKY_D); leftClouds.position.set(skyBase.lx,skyBase.ly,-SKY_D);
+}
+function floatSky(time){
+  if(reduce) return; const w=skyBase.w,h=skyBase.h;
+  nicoPlane.position.x=skyBase.nx+Math.sin(time*0.9)*w*0.022; nicoPlane.position.y=skyBase.ny+Math.sin(time*1.3+1)*h*0.025;
+  leftClouds.position.x=skyBase.lx+Math.sin(time*0.7+2)*w*0.022; leftClouds.position.y=skyBase.ly+Math.sin(time*1.1)*h*0.02;
+}
+buildNico();
+try{document.fonts.load('80px "Lilita One"').then(()=>buildNico()).catch(()=>{});}catch(e){}
+function resize(){const r=stage.getBoundingClientRect();W=Math.max(1,r.width);H=Math.max(1,r.height);renderer.setSize(W,H,false);camera.aspect=W/H;camera.fov=W<600?50:38;camera.updateProjectionMatrix();placeSkyPlanes();
+  clearTimeout(skyTimer); skyTimer=setTimeout(buildSky,skyTex?250:0);}
+new ResizeObserver(resize).observe(stage); resize();
+try{document.fonts.load('80px "Lilita One"').then(()=>buildSky()).catch(()=>{});}catch(e){}
+
+/* ===================== REVELADO (juego) ===================== */
+function reveal(){
+  const g=st.game;
+  if(!g) return {risk:true,cost:()=>true,ins:true,name:true};
+  if(g.type==='guess') return {risk:true,cost:()=>true,ins:true,name:false};
+  return {risk:g.revRisk,cost:s=>g.revCost.has(s),ins:g.revIns,name:true};
+}
+
+/* ===================== SEMÁFORO ===================== */
+const lastLight={};
+function setLight(id,cls,txt,sub){
+  const el=$(id); const key=cls+txt;
+  if(lastLight[id]!==key){ el.className='light '+cls; el.textContent=txt; if(lastLight[id]!==undefined){el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');} lastLight[id]=key; }
+  $('t'+id.slice(1)).textContent=sub;
+}
+function renderLights(){
+  const code=st.inc, s=st.step, rv=reveal();
+  const p=stepPayer(code,s), r=riskOwner(code,s);
+  if(rv.cost(s)) setLight('lCost',p===V?'s':'b',p,WHO_U[p]); else setLight('lCost','q','?','Por descubrir');
+  if(rv.risk) setLight('lRisk',r===V?'s':'b',r,WHO_U[r]); else setLight('lRisk','q','?','Por descubrir');
+  if(!rv.ins) setLight('lIns','q','?','Por descubrir');
+  else if(insActive(code,s)) setLight('lIns','s','V',`Obligatorio · ICC (${INC[code].ins})`);
+  else setLight('lIns','off','–',INC[code].ins?'No cubre este tramo':'No obligatorio');
+}
+
+/* ===================== APLICAR ESCENA ===================== */
+const COL={V:new THREE.Color('#2a6de0'),C:new THREE.Color('#f07c12'),N:new THREE.Color('#d6dae3')};
+const crateTint=new THREE.Color('#d6dae3');
+const flagCol=p=>p===V?'#2a6de0':'#f07c12';
+function applyScene(time){
+  const m=curMode(); setSceneMode(m);
+  const o=cs(st.step,st.t,m), code=st.inc, rv=reveal(), d=INC[code];
+  truckA.position.x=o.tA; truckB.position.x=o.tB;
+  truckA.userData.cab.material=M(TRUCK_COL[d.tA]); truckB.userData.cab.material=M(TRUCK_COL[d.tB]);
+  [truckA,truckB].forEach(tk=>{const dd=tk.position.x-tk.userData.lastX;tk.userData.wheels.forEach(w=>w.rotation.y-=dd/0.46);tk.userData.lastX=tk.position.x;});
+  const bob=m==='barco'?Math.sin(time*1.5)*0.07:0;
+  if(m==='barco'){ship.position.x=o.main; ship.position.y=SEA_Y+bob; ship.rotation.x=Math.sin(time*1.1)*0.015;
+    wake.material.opacity=(st.step===6&&st.t>0.02&&st.t<0.98)?0.5:0; wake.position.set(o.main-11,SEA_Y+0.08,SHIP_Z);}
+  if(m==='tren'){train.position.x=o.main;}
+  if(m==='avion'){plane.position.set(o.main+VEH.avion.off,o.alt,PLANE_Z);
+    const climb=st.step===6?Math.cos(Math.PI*seg(st.t,.06,.94))*0.22*(o.alt>0.05?1:0):0; plane.rotation.z=climb;
+    setLoader(loaderO,o.lO); setLoader(loaderD,o.lD);}
+  barO.rotation.x=-1.35*o.bO; barD.rotation.x=-1.35*o.bD;
+  if(m!=='avion'){setHook(craneO,o.hO.z,o.hO.y); setHook(craneD,o.hD.z,o.hD.y);}
+  crate.position.set(o.c.x,o.c.y+(st.step===6?bob:0),o.c.z);
+  crate.rotation.y=o.spin*Math.PI*2;
+  lastInside=o.inside;
+  const owner=riskOwner(code,st.step);
+  crateTint.lerp(rv.risk?COL[owner]:COL.N,0.14); crateMat.color.copy(crateTint);
+  const big=o.inside?2.3:1;
+  ring.visible=rv.risk; ring.material.color.copy(rv.risk?COL[owner]:COL.N);
+  ring.position.set(crate.position.x,o.inside?crate.position.y:crate.position.y-HS+0.08,crate.position.z); ring.rotation.z=time*1.2;
+  const sc=(1+Math.sin(time*4)*0.05)*big; ring.scale.set(sc,sc,sc);
+  const ins=rv.ins&&insActive(code,st.step);
+  bubble.visible=ins; bubble.position.copy(crate.position); bubble.scale.setScalar(big); bubbleWire.rotation.y=time*0.5; L_ins.visible=ins;
+  if(ins){const tx=`Seguro obligatorio · ICC (${d.ins}) · 110 %`; if(L_ins.el.textContent!==tx) L_ins.el.textContent=tx;}
+  const fp=(item,flag)=>{const i=STEPS.findIndex(x=>x.item===item);const p=payer(code,item);flag.material=M(rv.cost(i)?flagCol(p):'#c5ccd8');};
+  fp('pre',truckA.userData.flag); fp('post',truckB.userData.flag);
+  fp('flete',m==='barco'?shipFlag:(m==='tren'?trainFlag:planeFlag));
+  const rp=pointAt(d.risk), ce=costEnd(code), cp=pointAt(ce), same=d.risk===ce;
+  const place=(mk,p,dx,dz)=>{const x=p.x+dx,z=p.z+dz,ax=Math.abs(x);const solid=m==='tren'||ax>=30||(ax>=12&&z>=-6.5&&z<=-1.5)||(m==='avion'&&ax>=8&&z>=-3&&z<=10)||(m==='tren'&&Math.abs(z-SHIP_Z)<1.7);mk.position.set(x,solid?0:SEA_Y+0.2,z);};
+  const rz=rp.z>2?3.2:3.4;
+  place(riskMk,{x:rp.x,y:0,z:Math.min(rp.z,ALZ)},0,rp.z>2?rp.z-ALZ+3.2:rz);
+  if(same) place(costMk,{x:cp.x,y:0,z:Math.min(cp.z,ALZ)},2.8,cp.z>2?cp.z-ALZ+3.2:3.4); else place(costMk,{x:cp.x,y:0,z:Math.min(cp.z,ALZ)},cp.z>2?2.8:0,cp.z>2?cp.z-ALZ+3.2:-3.4);
+  riskMk.visible=rv.risk; L_risk.visible=rv.risk;
+  const showCost=!st.game||st.game.type==='guess'||st.step>ce||st.game.done;
+  costMk.visible=showCost; L_cost.visible=showCost;
+  riskMk.userData.top.rotation.y=time*1.8; costMk.userData.top.rotation.y=time*2.2;
+  const pi=placeInfo(st.step,m); L_place.visible=!!pi; if(pi){placePos=pi; if(L_place.el.textContent!==pi[3]) L_place.el.textContent=pi[3];}
+  const tk=st.step<=3?['A',truckA]:(st.step>=8&&st.step<=10?['B',truckB]:null);
+  L_truck.visible=!!tk;
+  if(tk){ const kind=tk[0]==='A'?d.tA:d.tB; const [cls,txt]=TRUCK_TXT[kind]; truckLblX=tk[1].position.x+1.2; if(L_truck.el.textContent!==txt){L_truck.el.textContent=txt;L_truck.el.className='lbl '+cls;} }
+}
+
+/* ===================== PANEL LATERAL ===================== */
+function stepTitle(s,m){ const rv=reveal(); return pick(TITLES[s],m); }
+function renderSide(){
+  const code=st.inc, d=INC[code], rv=reveal(), m=curMode();
+  $('rCode').textContent=rv.name?disp(code):'???';
+  $('rMode').textContent=rv.name?`Grupo ${d.g} · ${GROUPS[d.g]} · ${d.sea?'Solo marítimo':'Multimodal'} · Principal: ${MODES[m].w}`:`Incoterm misterioso · Principal: ${MODES[m].w}`;
+  const pb=$('pbody');
+  if(st.tab==='now') pb.innerHTML=nowHTML();
+  else if(st.tab==='cost') pb.innerHTML=costHTML();
+  else pb.innerHTML=fichaHTML();
+}
+function nowHTML(){
+  const code=st.inc, s=st.step, d=INC[code], rv=reveal(), m=curMode();
+  const p=stepPayer(code,s), r=riskOwner(code,s);
+  let h=`<div class="now"><div class="eyebrow">Paso ${s+1} de ${STEPS.length}${rv.name?' · '+disp(code):''}</div><h3>${stepTitle(s,m)}</h3><p>${pick(DESCS[s],m)}</p>`;
+  if((s<=3&&rv.name)||(s>=8&&s<=10&&rv.name)){
+    const kind=s<=3?d.tA:d.tB; const who={V:'el camión propio del vendedor (cabina azul)',C:'el camión del comprador (cabina naranja)',T:'el camión de un transportista (cabina gris)'}[kind];
+    if(s===0||s===1||s===9) h+=`<div class="callout t"><b>¿Quién conduce?</b>En este tramo la mercancía va en ${who}.${kind==='T'?` Lo paga el ${WHO[stepPayer(code,s===0?1:s)]}.`:''}</div>`;
+  }
+  const note=rv.name&&rv.cost(s)&&rv.risk?stepNote(code,s,m):'';
+  if(note) h+=`<div class="callout"><b>${disp(code)}</b>${note}</div>`;
+  if(rv.cost(s)&&rv.risk&&p===V&&r===C&&rv.name) h+=`<div class="callout c"><b>Coste y riesgo no coinciden</b>Este tramo lo paga el vendedor, pero el riesgo ya es del comprador.</div>`;
+  else if(rv.risk&&rv.name&&gapText(code)&&!st.game) h+=`<div class="callout c"><b>Recuerda</b>${gapText(code)}</div>`;
+  if(rv.ins&&insActive(code,s)&&rv.name) h+=`<div class="callout ins"><b>Seguro obligatorio</b>${code} obliga al vendedor a contratar un seguro <b>ICC (${d.ins})</b> (${d.ins==='A'?'cobertura amplia':'cobertura mínima'}) por un mínimo del 110 % del precio del contrato. Cubre desde que el riesgo pasa al comprador hasta ${d.ins==='A'?'el lugar de destino convenido':'el puerto de destino'}.</div>`;
+  if(st.game&&st.game.lastExpl) h+=`<div class="callout q"><b>Última pregunta</b>${st.game.lastExpl}</div>`;
+  return h+'</div>';
+}
+function costHTML(){
+  const code=st.inc, rv=reveal(), m=curMode();
+  let h='<ul class="costs">';
+  ITEM_IDS.forEach(id=>{
+    const lab=itemLabel(id,m);
+    const steps=STEPS.map((x,i)=>x.item===id?i:-1).filter(i=>i>=0);
+    const cur=steps.includes(st.step)||(id==='seguro'&&insActive(code,st.step));
+    let tag, show;
+    if(id==='seguro'){ show=rv.ins; tag=!show?'<span class="tag q">?</span>':(INC[code].ins?`<span class="tag i">Vendedor · ICC (${INC[code].ins})</span>`:'<span class="tag n">No obligatorio</span>'); }
+    else{ show=steps.some(i=>rv.cost(i)); const p=payer(code,id); tag=show?`<span class="tag ${p===V?'s':'b'}">${WHO_U[p]}</span>`:'<span class="tag q">?</span>'; }
+    const nt=show&&rv.name?itemNote(code,id):'';
+    h+=`<li class="${cur?'cur':''}"><span class="lab">${lab}</span>${tag}${nt?`<span class="nt">${nt}</span>`:''}</li>`;
+  });
+  return h+'</ul>';
+}
+function fichaHTML(){
+  if(st.game) return '<p class="hidden-note">La ficha se oculta durante el juego. Vuelve al modo explicación para consultarla.</p>';
+  const code=st.inc, d=INC[code], m=curMode();
+  const insTxt=d.ins==='A'?'Obligatorio para el vendedor: <b>ICC (A)</b>, cobertura amplia, salvo pacto en contrario. Mínimo el <b>110 % del precio del contrato</b>, en su moneda. Cubre desde la entrega al primer porteador hasta, como mínimo, el lugar de destino convenido.':(d.ins==='C'?'Obligatorio para el vendedor: <b>ICC (C)</b>, cobertura mínima; se puede pactar más. Mínimo el <b>110 % del precio del contrato</b>, en su moneda. Cubre desde la carga a bordo hasta, como mínimo, el puerto de destino. Si el país de destino exige contratar el seguro allí, conviene usar CFR.':itemNote(code,'seguro'));
+  return `<div class="ficha"><dl>
+    <div><div class="ttl">${disp(code)} · ${d.es}</div><div>${d.en}</div></div>
+    <div><dt>Cómo se indica en el contrato</dt><dd><span class="fmt">${baseCode(code)} [${d.place(m)}] Incoterms® 2020</span></dd></div>
+    <div><dt>Grupo y transporte</dt><dd>Grupo ${d.g} (${GROUPS[d.g].toLowerCase()}). ${d.sea?'Solo transporte marítimo y vías navegables interiores.':`Cualquier modo de transporte, también multimodal. En la maqueta: camión + ${MODES[m].w} + camión.`}</dd></div>
+    <div><dt>Entrega y transmisión del riesgo</dt><dd>${d.entrega(m)}</dd></div>
+    ${gapText(code)?`<div><dt>Coste y riesgo</dt><dd class="new">${gapText(code)}</dd></div>`:''}
+    ${d.extra?`<div><dt>${d.extra[0]}</dt><dd class="tt">${d.extra[1]}</dd></div>`:''}
+    <div><dt>Costes del vendedor</dt><dd>${d.costes}</dd></div>
+    <div><dt>Seguro</dt><dd class="${d.ins?'ins':''}">${insTxt}</dd></div>
+    <div><dt>Aduanas</dt><dd>Exportación: <b>${WHO[payer(code,'expo')]}</b> · Importación: <b>${WHO[payer(code,'impo')]}</b></dd></div>
+    ${d.novedad?`<div><dt>Incoterms 2020</dt><dd class="new">${d.novedad}</dd></div>`:''}
+    <div><dt>Clave para recordar</dt><dd><b>${d.clave}</b></dd></div>
+  </dl></div>`;
+}
+function setTab(t){st.tab=t;[['now','ptNow'],['cost','ptCost'],['ficha','ptFicha']].forEach(([k,id])=>$(id).setAttribute('aria-selected',String(k===t)));renderSide();}
+$('ptNow').addEventListener('click',()=>setTab('now'));
+$('ptCost').addEventListener('click',()=>setTab('cost'));
+$('ptFicha').addEventListener('click',()=>setTab('ficha'));
+
+function renderBar(){
+  const s=st.step, rv=reveal();
+  $('stepNo').textContent=`${s+1}/${STEPS.length}`;
+  $('stepTitle').textContent=stepTitle(s,curMode());
+  [...picker.querySelectorAll('.chip')].forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.inc===st.inc&&rv.name));b.disabled=!!st.game;});
+}
+function refresh(){renderBar();renderSide();renderLights();renderModeSel();updatePlayIcon();}
+
+/* ===================== AVISOS ===================== */
+let toastTimer=null;
+function toast(text,cls,ms=2600){
+  const host=$('toastHost'); host.innerHTML=`<div class="toast ${cls||''}">${text}</div>`;
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>{host.innerHTML='';},ms);
+}
+function boundaryEvents(s){
+  const code=st.inc, rv=reveal(), r=INC[code].risk, ce=costEnd(code);
+  if(s===r&&rv.risk){ burst(crate.position.clone(),'#e0434d'); beep('risk'); toast(isCPT(code)?'¡El riesgo pasa al comprador con el primer porteador!':'¡El riesgo pasa al comprador!','risk'); }
+  if(s===ce&&s!==r&&(!st.game||st.game.type==='guess')){ burst(crate.position.clone(),'#f2b705'); beep('coin'); toast('Fin de los costes del vendedor','cost'); }
+}
+function initialEvents(){ if(INC[st.inc].risk<0&&reveal().risk) toast('EXW: todo es del comprador desde el inicio','risk',3000); }
+
+/* ===================== REPRODUCCIÓN ===================== */
+function updatePlayIcon(){$('playIcon').innerHTML=st.playing?'<path d="M6 4.5h4.2v15H6zM13.8 4.5H18v15h-4.2z"/>':'<path d="M7 4.5v15L20 12z"/>';$('btnPlay').setAttribute('aria-label',st.playing?'Pausar':'Reproducir');}
+function play(){ if(st.step===STEPS.length-1&&st.t>=1) restart(); st.playing=true; updatePlayIcon(); }
+function pause(){st.playing=false;updatePlayIcon();}
+function restart(){st.step=0;st.t=0;st.hold=0;st.playing=false;crateTint.copy(COL.N);followView();refresh();initialEvents();}
+function advance(){
+  boundaryEvents(st.step);
+  if(st.step>=STEPS.length-1){st.playing=false;updatePlayIcon();onRouteEnd();return;}
+  st.step++; st.t=0; st.hold=0;
+  gameBeforeStep(); refresh();
+}
+function next(){ if(st.game) return; if(st.step>=STEPS.length-1){st.t=1;refresh();return;} advance(); }
+function prev(){ if(st.game) return; if(st.t>0.15){st.t=0;}else if(st.step>0){st.step--;st.t=0;} st.hold=0; refresh(); }
+$('btnPlay').addEventListener('click',()=>{ if(st.game&&st.game.blocked) return; st.playing?pause():play(); });
+$('btnNext').addEventListener('click',next);
+$('btnPrev').addEventListener('click',prev);
+$('btnRestart').addEventListener('click',()=>{ if(!st.game) restart(); });
+$('btnSpeed').addEventListener('click',()=>{const i=(SPEEDS.indexOf(st.speed)+1)%SPEEDS.length;setSpeed(SPEEDS[i]);});
+function setSpeed(v){st.speed=v;$('speedTxt').textContent=String(v).replace('.',',')+'×';}
+document.addEventListener('keydown',e=>{
+  if(e.key===' '&&e.target.closest&&e.target.closest('button')) return;
+  if(!$('ovSetup').hidden||!$('ovQuestion').hidden||!$('ovResults').hidden) return;
+  if(e.key===' '){e.preventDefault();$('btnPlay').click();}
+  else if(e.key==='ArrowRight')next(); else if(e.key==='ArrowLeft')prev(); else if((e.key==='r'||e.key==='R')&&!st.game)restart();
+});
+function selectInc(code,user){
+  st.inc=code; restart(); if(user) beep('coin');
+  const chip=picker.querySelector(`[data-inc="${code}"]`); if(chip&&chip.scrollIntoView) try{chip.scrollIntoView({block:'nearest',inline:'nearest'});}catch(e){}
+}
+
+/* ===================== MODO JUEGO ===================== */
+const TEAMS=[{n:'Equipo Estrella',c:'var(--team1)'},{n:'Equipo Rayo',c:'var(--team2)'}];
+const setup={type:'route',players:1,inc:'random',mode:'tren'};
+function bindOpts(id,key,cb){$(id).addEventListener('click',e=>{const b=e.target.closest('.opt');if(!b)return;setup[key]=key==='players'?+b.dataset.v:b.dataset.v;[...$(id).children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));cb&&cb();});}
+bindOpts('setType','type',()=>{$('setIncWrap').hidden=setup.type!=='route';});
+bindOpts('setPlayers','players');
+function bindMini(id,key){$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;setup[key]=b.dataset.v;[...$(id).children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));});}
+(function(){let h='<button data-v="random" aria-pressed="true">Al azar</button>';ORDER.forEach(c=>h+=`<button data-v="${c}" aria-pressed="false">${disp(c)}</button>`);$('setInc').innerHTML=h;})();
+bindMini('setInc','inc'); bindMini('setMode','mode');
+
+function setModeTabs(m){$('tabExplain').setAttribute('aria-pressed',String(m==='explain'));$('tabGame').setAttribute('aria-pressed',String(m==='game'));}
+$('tabGame').addEventListener('click',()=>{ if(st.game&&!st.game.done) return; pause(); setModeTabs('game'); $('ovResults').hidden=true; $('ovSetup').hidden=false; });
+$('tabExplain').addEventListener('click',()=>toExplain());
+$('btnSetupCancel').addEventListener('click',()=>{$('ovSetup').hidden=true; if(!st.game) setModeTabs('explain');});
+$('btnSetupGo').addEventListener('click',startGame);
+$('btnResAgain').addEventListener('click',()=>{$('ovResults').hidden=true;$('ovSetup').hidden=false;});
+$('btnResExplain').addEventListener('click',()=>toExplain());
+function toExplain(){
+  st.game=null; ['ovSetup','ovQuestion','ovResults'].forEach(i=>$(i).hidden=true); $('score').hidden=true; $('btnAnswer').hidden=true;
+  setModeTabs('explain'); ['btnPrev','btnNext','btnRestart'].forEach(i=>$(i).disabled=false); setSpeed(1); restart();
+}
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const randMode=()=>Math.random()<0.5?'tren':'avion';
+
+function buildQuestions(code){
+  const d=INC[code], Q={}, n=disp(code), m=curMode(), veh=MODES[m].veh;
+  const vc=(id,text,answer,expl)=>({id,text,answer,expl,opts:[{v:V,t:'Vendedor',cls:'s'},{v:C,t:'Comprador',cls:'b'}]});
+  const add=(s,q)=>{(Q[s]=Q[s]||[]).push(q);};
+  if(code==='FCAF'||code==='EXW') add(0,vc('carga',`¿Quién carga la mercancía en el almacén del vendedor en ${n}?`,payer(code,'carga'),code==='FCAF'?'En FCA en fábrica carga el vendedor. Por eso se diferencia de EXW.':'En EXW el vendedor no está obligado a cargar: lo hace el comprador.'));
+  if(isCPT(code)) add(0,{id:'porteador',text:`En ${n}, ¿quién es el «primer porteador» en esta ruta?`,opts:shuffle([
+      {v:'ok',t:'El transportista que recoge en el almacén del vendedor'},{v:'main',t:`${MODES[m].vehU} del transporte principal`},{v:'last',t:'El camión que llega al almacén del comprador'}]),
+      answer:'ok',expl:'Es el primer transportista que contrata el vendedor: el camión que recoge en su almacén. Al entregarle la mercancía pasa el riesgo.'});
+  const correct=PLACES[d.rp];
+  const pool=PLACES.filter(p=>p!==correct&&(d.sea||(!p.includes('buque'))));
+  const dist=shuffle(pool).slice(0,3);
+  add(0,{id:'riskpt',text:`En ${n}, ¿dónde pasa el riesgo del vendedor al comprador?`,opts:shuffle([correct,...dist]).map(p=>({v:p,t:p})),answer:correct,expl:`En ${n} el riesgo pasa así: ${correct.toLowerCase()}.`+(d.g==='C'?' En el grupo C el riesgo pasa en origen aunque el vendedor pague el transporte.':'')});
+  add(2,vc('expo',`¿Quién paga el despacho de exportación en ${n}?`,payer(code,'expo'),code==='EXW'?'En EXW lo paga el comprador. Es el único caso.':`Lo paga el vendedor, como en todos los Incoterms salvo EXW.`+((code==='FCAF'||isCPT(code))?' Aunque el riesgo ya sea del comprador.':'')));
+  if(code==='FCAT') add(4,vc('descarga',`¿Quién descarga el camión del vendedor en la terminal en ${n}?`,C,'Lo descarga el comprador: en FCA en otro lugar, el vendedor entrega sin descargar.'));
+  if(code==='CFR'||code==='CIF') add(5,{id:'enlace',text:`En ${n}, la mercancía va primero en un barco de enlace (Hong Kong → Shanghái) y luego en el buque grande hasta Southampton. Si no se pacta nada, ¿dónde pasa el riesgo?`,opts:shuffle([{v:'ok',t:'En Hong Kong, al subir al primer barco'},{v:'sh',t:'En Shanghái, al subir al buque grande'},{v:'de',t:'En Southampton, al llegar'}]),answer:'ok',expl:'Salvo pacto, el riesgo pasa al entregar la mercancía al primer porteador: el barco de enlace en Hong Kong.'});
+  add(5,vc('bordo',`¿Quién paga la carga en ${veh} en ${n}?`,payer(code,'bordo'),`La paga el ${WHO[payer(code,'bordo')]}.`+(['FCAF','FCAT','FAS','EXW'].includes(code)?' El vendedor ya había entregado antes.':'')));
+  const fl=payer(code,'flete');
+  add(6,vc('flete',`¿Quién paga el transporte principal en ${MODES[m].w} en ${n}?`,fl,`Lo paga el ${WHO[fl]}. `+({E:'En EXW el comprador lo paga todo.',F:'En los términos F lo paga el comprador.',C:'En los términos C lo paga el vendedor.',D:'En los términos D lo paga el vendedor.'})[d.g]));
+  if(d.g==='C') add(6,{id:'seguro',text:`¿Qué dice ${n} sobre el seguro de transporte?`,opts:[{v:'no',t:'No es obligatorio'},{v:'C',t:'Obligatorio: ICC (C), mín. 110 %'},{v:'A',t:'Obligatorio: ICC (A), mín. 110 %'},{v:'100',t:'Obligatorio: 100 % del valor'}],answer:d.ins||'no',expl:d.ins?`Obligatorio para el vendedor: ICC (${d.ins}) por un mínimo del 110 % del precio del contrato.`:'No es obligatorio. Solo CIF y CIP lo exigen.'});
+  add(8,vc('impo',`¿Quién paga la importación y los aranceles en ${n}?`,payer(code,'impo'),code==='DDP'?'La paga el vendedor. DDP es el único caso.':'La paga el comprador. Solo en DDP la paga el vendedor.'));
+  add(9,vc('post',`¿Quién paga el camión hasta el almacén del comprador en ${n}?`,payer(code,'post'),`Lo paga el ${WHO[payer(code,'post')]}.`+(isCPT(code)?' El destino convenido es el almacén del comprador.':'')));
+  return Q;
+}
+const COST_Q={carga:1,expo:1,descarga:1,bordo:1,flete:1,impo:1,post:1};
+
+function startGame(){
+  $('ovSetup').hidden=true;
+  const g={type:setup.type,players:setup.players,scores:[0,0],team:0,streak:0,asked:0,correct:0,done:false,blocked:false,lastExpl:'',revRisk:false,revCost:new Set(),revIns:true,pending:[],askedSteps:new Set()};
+  st.game=g; setModeTabs('game'); setTab('now');
+  ['btnPrev','btnNext','btnRestart'].forEach(i=>$(i).disabled=true);
+  followView();
+  if(g.type==='route'){
+    const code=setup.inc==='random'?ORDER[Math.floor(Math.random()*ORDER.length)]:setup.inc;
+    st.inc=code; st.mm=setup.mode==='random'?randMode():setup.mode;
+    st.step=0; st.t=0; st.playing=false; crateTint.copy(COL.N); setSpeed(1);
+    g.Q=buildQuestions(code); g.revIns=!INC[code].ins;
+    renderScore(); gameBeforeStep(); refresh();
+  }else{
+    g.round=0; g.rounds=5; g.pool=shuffle(ORDER.slice()); renderScore(); nextRound();
+  }
+}
+function renderScore(){
+  const g=st.game; if(!g){$('score').hidden=true;return;}
+  $('score').hidden=false;
+  if(g.players===2) $('score').innerHTML=TEAMS.map((t,i)=>`<div class="sc t${i+1} ${g.team===i?'active':''}"><small>${t.n}</small><b>${g.scores[i]}</b></div>`).join('');
+  else $('score').innerHTML=`<div class="sc"><small>Puntos</small><b>${g.scores[0]}</b></div>`+(g.type==='guess'?`<div class="sc"><small>Ronda</small><b>${Math.min(g.round,g.rounds)}/${g.rounds}</b></div>`:`<div class="sc"><small>Racha</small><b>${g.streak}</b></div>`);
+}
+function gameBeforeStep(){
+  const g=st.game; if(!g||g.type!=='route') return false;
+  const qs=g.Q[st.step];
+  if(!qs||g.askedSteps.has(st.step)){ g.revCost.add(st.step); return false; }
+  if(!qs.some(q=>COST_Q[q.id])) g.revCost.add(st.step);
+  g.askedSteps.add(st.step); g.pending=qs.slice(); st.playing=false; updatePlayIcon(); showQuestion(); return true;
+}
+function teamTag(g){return g.players===2?`<span class="t" style="background:${TEAMS[g.team].c}">${TEAMS[g.team].n}</span>`:'';}
+function showQuestion(){
+  const g=st.game, q=g.pending[0];
+  g.blocked=true; g.curQ=q;
+  $('qTag').innerHTML=`${teamTag(g)}<span>${disp(st.inc)} · Paso ${st.step+1}: ${stepTitle(st.step,curMode())}</span>`;
+  $('qTitle').textContent=q.text;
+  $('qOpts').innerHTML=q.opts.map((o,i)=>`<button class="opt ${o.cls?o.cls+' big':''}" data-i="${i}">${o.t}</button>`).join('');
+  $('qFb').innerHTML=''; $('qActions').hidden=true; $('ovQuestion').hidden=false;
+  const first=$('qOpts').querySelector('button'); if(first) first.focus();
+}
+$('qOpts').addEventListener('click',e=>{
+  const b=e.target.closest('.opt'); const g=st.game; if(!b||b.disabled||!g) return;
+  const q=g.curQ, o=q.opts[+b.dataset.i], ok=String(o.v)===String(q.answer);
+  [...$('qOpts').children].forEach((x,i)=>{x.disabled=true;if(String(q.opts[i].v)===String(q.answer))x.classList.add('ok');else if(x===b)x.classList.add('ko');else x.classList.add('dim');});
+  let pts=0;
+  if(g.type==='route'){
+    g.asked++; if(ok){g.correct++;g.streak++;pts=100+(g.streak>=3?50:0);}else g.streak=0;
+    if(q.id==='riskpt') g.revRisk=true;
+    if(q.id==='seguro') g.revIns=true;
+    if(COST_Q[q.id]) g.revCost.add(st.step);
+  }else{ pts=ok?(g.early?300:200):0; if(ok) g.correct++; }
+  g.scores[g.players===2?g.team:0]+=pts;
+  g.lastExpl=q.expl;
+  beep(ok?'ok':'ko');
+  const head=ok?`¡Correcto!${pts?` +${pts}`:''}${g.type==='route'&&g.streak>=3?' · ¡Racha!':''}`:'No es correcto';
+  $('qFb').innerHTML=`<div class="fb ${ok?'ok':'ko'}"><b>${head}</b>${q.expl}</div>`;
+  $('qActions').hidden=false; $('btnQNext').focus();
+  if(g.players===2) g.team=1-g.team;
+  renderScore(); refresh();
+});
+$('btnQNext').addEventListener('click',()=>{
+  const g=st.game; if(!g) return;
+  $('ovQuestion').hidden=true;
+  if(g.type==='route'){
+    g.pending.shift();
+    if(g.pending.length){showQuestion();return;}
+    g.blocked=false; g.revCost.add(st.step); refresh();
+    if(st.step===0&&st.t===0) initialEvents();
+    play();
+  }else nextRound();
+});
+function onRouteEnd(){
+  const g=st.game;
+  if(!g){ toast('¡Mercancía entregada!','',2600); beep('end'); return; }
+  if(g.type==='route'){ g.done=true; beep('end'); refresh(); setTimeout(showResults,900); }
+  else if(!g.answered){ g.early=false; askGuess(); }
+}
+function nextRound(){
+  const g=st.game;
+  if(g.round>=g.rounds){g.done=true;beep('end');showResults();return;}
+  g.round++; g.answered=false; g.early=true; g.blocked=false;
+  st.inc=g.pool[(g.round-1)%g.pool.length]; st.mm=randMode(); st.step=0; st.t=0; st.hold=0; crateTint.copy(COL.N); followView();
+  setSpeed(Math.max(st.speed,1.5));
+  $('btnAnswer').hidden=false; renderScore(); refresh();
+  toast(`Ronda ${g.round} de ${g.rounds}: mira el semáforo`,'',2600);
+  setTimeout(()=>{ if(st.game===g&&!g.answered) play(); },900);
+}
+$('btnAnswer').addEventListener('click',()=>{const g=st.game;if(!g||g.type!=='guess'||g.answered)return;g.early=!(st.step===STEPS.length-1&&st.t>=1);askGuess();});
+function askGuess(){
+  const g=st.game; pause(); g.answered=true; g.blocked=true; $('btnAnswer').hidden=true;
+  const code=st.inc, dist=shuffle(CONFUSE[code].slice()).slice(0,3);
+  const opts=shuffle([code,...dist]).map(c=>({v:c,t:`${disp(c)}<small>${INC[c].es}</small>`}));
+  g.pending=[{id:'guess',text:'¿Qué Incoterm 2020 era?',opts,answer:code,expl:`Era <b>${disp(code)}</b>. ${INC[code].sum}`}];
+  g.curQ=g.pending[0];
+  $('qTag').innerHTML=`${teamTag(g)}<span>Ronda ${g.round} de ${g.rounds} · ${g.early?'Respuesta rápida: 300 puntos':'Ruta completa: 200 puntos'}</span>`;
+  $('qTitle').textContent=g.curQ.text;
+  $('qOpts').innerHTML=opts.map((o,i)=>`<button class="opt big" data-i="${i}">${o.t}</button>`).join('');
+  $('qFb').innerHTML=''; $('qActions').hidden=true; $('ovQuestion').hidden=false;
+}
+function showResults(){
+  const g=st.game; $('btnAnswer').hidden=true;
+  let h='';
+  if(g.players===2){
+    const w=g.scores[0]===g.scores[1]?'¡Empate!':`Gana el ${TEAMS[g.scores[0]>g.scores[1]?0:1].n}`;
+    h=`<p style="font-family:var(--display);font-size:24px;text-align:center;margin-top:8px">${w}</p><div class="final">${TEAMS.map((t,i)=>`<div class="sc t${i+1}"><small>${t.n}</small><b>${g.scores[i]}</b></div>`).join('')}</div>`;
+  }else h=`<div class="final"><div class="sc"><small>Puntos</small><b>${g.scores[0]}</b></div><div class="sc"><small>Aciertos</small><b>${g.correct}/${g.type==='route'?g.asked:g.rounds}</b></div></div>`;
+  if(g.type==='route') h+=`<p><b>${disp(st.inc)}:</b> ${INC[st.inc].sum}</p>`;
+  $('rBody').innerHTML=h; $('ovResults').hidden=false;
+}
+
+/* ===================== BUCLE ===================== */
+let last=performance.now(); const time0=last; let firstFrame=true;
+function frame(now){
+  const dt=Math.min(0.05,(now-last)/1000); last=now; const time=(now-time0)/1000;
+  if(st.playing){
+    if(st.t<1) st.t=Math.min(1,st.t+dt*st.speed/STEPS[st.step].dur);
+    else { st.hold+=dt*st.speed; if(st.hold>0.45) advance(); }
+  }
+  const pa=seaGeo.attributes.position.array, amp=reduce?0.03:0.12;
+  for(let i=0;i<pa.length;i+=3) pa[i+1]=Math.sin(seaBase[i]*0.14+time*1.2)*amp+Math.cos(seaBase[i+2]*0.17+time)*amp;
+  seaGeo.attributes.position.needsUpdate=true;
+  floatSky(time);
+  [seller,buyer].forEach(p=>{const u=p.userData;u.arm.rotation.z=0.5+Math.sin(time*3+u.phase)*0.45;});
+  applyScene(time);
+  for(let i=parts.length-1;i>=0;i--){const p=parts[i],u=p.userData;u.v.y-=dt*14;p.position.addScaledVector(u.v,dt);u.life-=dt*0.9;p.material.opacity=Math.max(0,u.life);if(u.life<=0){scene.remove(p);p.geometry.dispose();p.material.dispose();parts.splice(i,1);}}
+  if(st.follow) cam.goal.set(crate.position.x+2,crate.position.y*0.35+0.5,crate.position.z-0.5);
+  const k=firstFrame?1:1-Math.exp(-dt*2.6);
+  cam.target.lerp(cam.goal,k); cam.r+=(cam.rGoal-cam.r)*k; cam.phi+=(cam.phiGoal-cam.phi)*k; cam.theta+=(cam.thetaGoal-cam.theta)*k;
+  placeCamera();
+  sun.position.set(cam.target.x+40,95,cam.target.z+55); sun.target.position.copy(cam.target); sun.target.updateMatrixWorld();
+  renderer.render(scene,camera);
+  updateLabels();
+  if(firstFrame){firstFrame=false;$('loading').hidden=true;}
+  requestAnimationFrame(frame);
+}
+
+/* ===================== ARRANQUE ===================== */
+function start(data){ if(data&&INC[data.inc]) st.inc=data.inc; if(data&&MODES[data.mm]&&data.mm!=='barco') st.mm=data.mm; selectInc(st.inc,false); requestAnimationFrame(frame); }
+try{ window.claude&&window.claude.hot&&window.claude.hot.snapshot&&window.claude.hot.snapshot(()=>({inc:st.inc,mm:st.mm})); }catch(e){}
+if(window.claude&&window.claude.hot&&window.claude.hot.ready) window.claude.hot.ready(start); else start((window.claude&&window.claude.hot&&window.claude.hot.data)||{});
+})();
+</script>
+
+</body>
+</html>
