@@ -837,7 +837,7 @@ function dolphin(){const g=new THREE.Group(); seaGroup.add(g);
   const fin=new THREE.Mesh(new THREE.ConeGeometry(0.35,0.9,4),M('#4a6a8f')); fin.position.set(-0.2,0.75,0); fin.rotation.z=0.4; g.add(fin);
   const tail=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.1,1.6),M('#4a6a8f')); tail.position.set(-2.3,0,0); g.add(tail);
   return g;}
-[[ -24,24,20,0],[-20,26,31,2.2],[ -22,22,38,4.1]].forEach(([x0,x1,z,ph])=>fauna.dolphins.push({g:dolphin(),x0,x1,z,ph}));
+/* delfines retirados */
 function animateFauna(time,dt){
   const still=reduce?0:1;
   fauna.birds.forEach(b=>{const a=time*b.sp*still+b.ph; const x=b.cx+Math.cos(a)*b.rx, z=b.cz+Math.sin(a)*b.rz, y=b.y+Math.sin(time*0.8+b.ph)*2;
