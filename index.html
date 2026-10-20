@@ -440,7 +440,7 @@ const DESCS={
 const pick=(x,m)=>typeof x==='string'?x:x[m];
 const PAY_ORDER=['carga','pre','expo','desc_o','bordo','flete','desc_d','impo','post','desc_c'];
 const GROUPS={E:'Salida',F:'Transporte principal no pagado',C:'Transporte principal pagado',D:'Llegada'};
-const PLACES=['En el almacén del vendedor, sin cargar','En el almacén del vendedor, ya cargada en el vehículo del comprador','Al ponerla a disposición del porteador del comprador en la terminal de salida','Al costado del buque, en el muelle del puerto de origen','A bordo del buque, en el puerto de origen','En la terminal de destino, ya descargada','En el almacén del comprador, lista para descargar','Al entregarla al primer porteador, en el almacén del vendedor'];
+const PLACES=['En el almacén del vendedor, sin cargar','En el almacén del vendedor, ya cargada en el vehículo del comprador','Al ponerla a disposición del porteador del comprador en la terminal de salida','Al costado del buque, en el muelle del puerto de origen','A bordo del buque, en el puerto de origen','En la terminal de destino, ya descargada','En el almacén del comprador, lista para descargar','Al entregarla al primer porteador, en el almacén del vendedor','En el almacén del comprador, ya descargada'];
 
 const INC={
  EXW:{g:'E',en:'Ex Works',es:'En fábrica',sea:false,pay:'CCCCCCCCCC',risk:-1,place:()=>'almacén del vendedor',rp:0,tA:'C',tB:'T',
@@ -500,17 +500,18 @@ const INC={
  DAP:{g:'D',en:'Delivered at Place',es:'Entregada en lugar',sea:false,pay:'VVVVVVVCVC',risk:9,place:()=>'almacén del comprador',rp:6,tA:'T',tB:'T',
    entrega:()=>'En el lugar de destino convenido, sobre el vehículo que llega y lista para descargar.',
    costes:'Todo el transporte hasta destino. No paga la importación ni la descarga final.',
-   extra:['Transbordos','Los transbordos intermedios (terminal, aeropuerto) no cambian el riesgo: es del vendedor hasta el lugar de destino convenido.'],
+   imp:true,
+   extra:['Importación y riesgo','La importación es del comprador en coste y en riesgo: mientras se despacha, el riesgo es del comprador (art. B3). Al reanudarse el transporte, el riesgo vuelve al vendedor hasta la entrega. Los transbordos intermedios (terminal, aeropuerto) no cambian el riesgo. Si se quiere que la importación la haga el vendedor, conviene usar DDP.'],
    novedad:'Novedad 2020: se admite que el vendedor use su propio transporte.',
    clave:'El vendedor lleva la mercancía hasta destino, pero la importación es del comprador.',
-   sum:'El vendedor paga y arriesga hasta el almacén del comprador, pero la importación la paga el comprador.'},
- DPU:{g:'D',en:'Delivered at Place Unloaded',es:'Entregada en lugar descargada',sea:false,pay:'VVVVVVVCCC',risk:7,place:m=>MODES[m].termD,rp:5,tA:'T',tB:'T',
-   entrega:m=>`En el lugar de destino convenido, ya descargada. Aquí: la ${MODES[m].termD}.`,
-   costes:'Transporte hasta destino y descarga. No paga la importación.',
-   extra:['Transbordos','Los transbordos intermedios no cambian el riesgo: es del vendedor hasta que descarga en el lugar convenido.'],
+   sum:'El vendedor paga y arriesga hasta el almacén del comprador y lo deja listo para descargar; descarga el comprador. La importación es del comprador, en coste y en riesgo.'},
+ DPU:{g:'D',en:'Delivered at Place Unloaded',es:'Entregada en lugar descargada',sea:false,pay:'VVVVVVVCVV',risk:10,place:()=>'almacén del comprador',rp:8,tA:'T',tB:'T',imp:true,
+   entrega:()=>'En el lugar de destino convenido, ya descargada. Aquí: el almacén del comprador, donde el vendedor descarga la mercancía. Desde 2020 el lugar puede ser cualquiera, no solo una terminal.',
+   costes:'Todo el transporte hasta destino y la descarga en el almacén del comprador. No paga la importación.',
+   extra:['Importación y riesgo','La importación es del comprador en coste y en riesgo: mientras se despacha, el riesgo es del comprador (art. B3). Al reanudarse el transporte, el riesgo vuelve al vendedor hasta que descarga en el lugar convenido. El vendedor debe asegurarse de que puede descargar allí; si no, conviene usar DAP.'],
    novedad:'Novedad 2020: sustituye a DAT. El lugar de entrega puede ser cualquiera, no solo una terminal.',
    clave:'Único Incoterm en el que el vendedor descarga en destino.',
-   sum:'El vendedor paga y arriesga hasta destino y además descarga la mercancía. La importación es del comprador.'},
+   sum:'El vendedor paga y arriesga hasta el almacén del comprador y además descarga la mercancía. La importación es del comprador, en coste y en riesgo.'},
  DDP:{g:'D',en:'Delivered Duty Paid',es:'Entregada derechos pagados',sea:false,pay:'VVVVVVVVVC',risk:9,place:()=>'almacén del comprador',rp:6,tA:'T',tB:'T',
    entrega:()=>'En el lugar de destino convenido, despachada de importación y lista para descargar.',
    costes:'Todo, incluidos los trámites y aranceles de importación. No la descarga final.',
@@ -527,7 +528,7 @@ const baseCode=c=>INC[c].base||c;
 function payer(code,item){ if(item==='seguro') return INC[code].ins? V : null; return INC[code].pay[PAY_ORDER.indexOf(item)]; }
 function stepPayer(code,s){ return payer(code,STEPS[s].item); }
 function costEnd(code){ let e=-1; for(let s=0;s<STEPS.length;s++) if(stepPayer(code,s)===V) e=s; return e; }
-function riskOwner(code,s){ return s<=INC[code].risk? V : C; }
+function riskOwner(code,s){ if(INC[code].imp&&s===8) return C; return s<=INC[code].risk? V : C; }
 function insActive(code,s){ const d=INC[code]; return !!d.ins && s>d.risk && s<=d.insEnd; }
 const WHO={V:'vendedor',C:'comprador'}, WHO_U={V:'Vendedor',C:'Comprador'};
 const isCPT=c=>c==='CPT'||c==='CIP';
@@ -553,7 +554,9 @@ function itemNote(code,item){
   if(item==='desc_o' && code==='FCAT') return 'El vendedor entrega en su camión, listo para descargar.';
   if(item==='carga' && code==='EXW') return 'El vendedor no está obligado a cargar.';
   if(item==='carga' && code==='FCAF') return 'En FCA en fábrica, el vendedor carga.';
-  if(item==='desc_d' && code==='DPU') return 'En DPU el vendedor está obligado a descargar.';
+  if(item==='desc_c' && code==='DPU') return 'En DPU descarga el vendedor: es el único Incoterm en que está obligado a descargar.';
+  if(item==='desc_d' && code==='DPU') return 'Transbordo en la terminal: lo paga el vendedor.';
+  if(item==='impo' && INC[code].imp) return 'Coste y riesgo del comprador mientras se despacha. Al reanudarse el transporte, el riesgo vuelve al vendedor.';
   if(item==='desc_c' && (code==='DAP'||code==='DDP')) return 'Del comprador, salvo que esté incluida en el contrato de transporte del vendedor.';
   if(item==='impo' && code==='DDP') return 'Único Incoterm en que la importación es del vendedor.';
   if(item==='expo' && code==='EXW') return 'Único Incoterm en que la exportación es del comprador.';
@@ -579,8 +582,8 @@ function stepNote(code,s,m){
    CIF:{5:'El riesgo pasa a bordo en el puerto de origen, igual que en FOB.',6:'El vendedor paga el flete y el seguro, pero el riesgo del viaje ya es del comprador: el seguro le protege a él.'},
    CPT:{0:'Entrega CPT: el vendedor carga la mercancía en el camión del transportista que él ha contratado, el primer porteador. En ese momento el riesgo pasa al comprador.',1:'El vendedor paga este camión, pero el riesgo ya es del comprador.',6:`El vendedor paga el transporte en ${MODES[m].w}, pero el riesgo es del comprador desde el almacén del vendedor.`,9:'El destino convenido es el almacén del comprador, así que el vendedor paga también este camión.'},
    CIP:{0:'Entrega CIP: el vendedor carga la mercancía en el camión del transportista que él ha contratado, el primer porteador. En ese momento el riesgo pasa al comprador y empieza el seguro.',1:'El vendedor paga este camión, pero el riesgo ya es del comprador: el seguro le protege a él.',6:`El vendedor paga el transporte en ${MODES[m].w} y el seguro, pero el riesgo es del comprador desde el almacén del vendedor.`,9:'El destino convenido es el almacén del comprador: el vendedor paga este camión y el seguro sigue cubriendo hasta la llegada.'},
-   DAP:{8:'La importación (trámites y aranceles) corresponde al comprador.',9:'Entrega DAP: la mercancía llega al lugar convenido lista para descargar. Aquí pasa el riesgo.',10:'Descargar en destino corresponde al comprador.'},
-   DPU:{7:'Entrega DPU: el vendedor descarga la mercancía en el lugar convenido. Es el único Incoterm con descarga a cargo del vendedor. En 2020 sustituye a DAT.'},
+   DAP:{8:'La importación (trámites y aranceles) es del comprador, en coste y en riesgo: mientras se despacha, el riesgo es suyo (art. B3).',9:'Despachada la mercancía, se reanuda el transporte y el riesgo vuelve al vendedor. Entrega DAP: llega al almacén del comprador lista para descargar. Aquí pasa el riesgo.',10:'En DAP descarga el comprador.'},
+   DPU:{8:'La importación (trámites y aranceles) es del comprador, en coste y en riesgo: mientras se despacha, el riesgo es suyo (art. B3).',9:'Despachada la mercancía, se reanuda el transporte y el riesgo vuelve al vendedor.',10:'Entrega DPU: el vendedor descarga la mercancía en el almacén del comprador y, ya descargada, pasa el riesgo. Es el único Incoterm con descarga a cargo del vendedor. En 2020 sustituye a DAT.'},
    DDP:{8:'En DDP el vendedor paga también el despacho de importación y los aranceles.',9:'Entrega DDP: el riesgo pasa en el almacén del comprador, con la mercancía despachada y lista para descargar.'}
   };
   let n=(N[code]&&N[code][s])||'';
@@ -1342,6 +1345,7 @@ function buildQuestions(code){
   add(6,vc('flete',`¿Quién paga el transporte principal en ${MODES[m].w} en ${n}?`,fl,`Lo paga el ${WHO[fl]}. `+({E:'En EXW el comprador lo paga todo.',F:'En los términos F lo paga el comprador.',C:'En los términos C lo paga el vendedor.',D:'En los términos D lo paga el vendedor.'})[d.g]));
   if(d.g==='C') add(6,{id:'seguro',text:`¿Qué dice ${n} sobre el seguro de transporte?`,opts:[{v:'no',t:'No es obligatorio'},{v:'C',t:'Obligatorio: ICC (C), mín. 110 %'},{v:'A',t:'Obligatorio: ICC (A), mín. 110 %'},{v:'100',t:'Obligatorio: 100 % del valor'}],answer:d.ins||'no',expl:d.ins?`Obligatorio para el vendedor: ICC (${d.ins}) por un mínimo del 110 % del precio del contrato.`:'No es obligatorio. Solo CIF y CIP lo exigen.'});
   add(8,vc('impo',`¿Quién paga la importación y los aranceles en ${n}?`,payer(code,'impo'),code==='DDP'?'La paga el vendedor. DDP es el único caso.':'La paga el comprador. Solo en DDP la paga el vendedor.'));
+  if(d.imp) add(8,vc('riesgoImpo',`En ${n}, mientras se hace el despacho de importación, ¿de quién es el riesgo?`,C,'Del comprador: la importación es suya en coste y en riesgo (art. B3). Al reanudarse el transporte, el riesgo vuelve al vendedor.'));
   add(9,vc('post',`¿Quién paga el camión hasta el almacén del comprador en ${n}?`,payer(code,'post'),`Lo paga el ${WHO[payer(code,'post')]}.`+(isCPT(code)?' El destino convenido es el almacén del comprador.':'')));
   return Q;
 }
