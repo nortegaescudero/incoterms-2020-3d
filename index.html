@@ -7,7 +7,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lilita+One&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fredoka:wght@600&family=Lilita+One&display=swap">
 <style>
 /* Layout: cabecera (título, leyenda, transporte principal, modo) + selector de Incoterms;
    a la izquierda la maqueta 3D (semáforo arriba a la izquierda, barra de paso abajo);
@@ -96,6 +96,14 @@ button:focus-visible{outline:3px solid var(--coin);outline-offset:2px}
 .lbl.cost{background:var(--coin);border-color:transparent}
 .lbl.ins{background:var(--shield);color:#fff;border-color:transparent}
 .lbl.place{font-size:13.5px;padding:2px 9px}
+.logo-nico{position:absolute;right:14px;top:12px;z-index:3;display:flex;align-items:center;gap:4px;padding:6px 12px 6px 8px;border-radius:14px;background:rgba(255,255,255,.72);box-shadow:0 2px 10px rgba(31,42,68,.12);font-family:'Fredoka',"Arial Rounded MT Bold",system-ui,sans-serif;font-weight:600;line-height:1;pointer-events:none;user-select:none}
+.logo-nico .tile{width:42px;height:42px;flex:none;border-radius:12px;background:#15151E;display:flex;align-items:center;justify-content:center;margin-top:4px}
+.logo-nico .tile span{font-size:36px;color:#fff;margin-top:-5px}
+.logo-nico .word{display:flex;align-items:baseline;font-size:44px;letter-spacing:-1px;color:#15151E}
+.logo-nico .i{position:relative;display:inline-block}
+.logo-nico .dot{position:absolute;left:50%;top:.04em;width:.24em;height:.24em;margin-left:-.12em;border-radius:50%;background:#FF5A36}
+.score{top:74px!important}
+.answerbtn{top:134px!important}
 .stage.clean #labels,.stage.clean #toastHost,.stage.clean .stepbar{display:none}
 
 /* Semáforo */
@@ -236,6 +244,7 @@ button:focus-visible{outline:3px solid var(--coin);outline-offset:2px}
   .sc{min-width:70px;padding:3px 8px}
   .answerbtn{top:64px}
 }
+@media (max-width: 600px){ .logo-nico{transform:scale(.75);transform-origin:top right} .score{top:62px!important} .answerbtn{top:116px!important} }
 @media (prefers-reduced-motion: reduce){ .toast,.card,.light.flash{animation:none} }
 </style>
 </head>
@@ -280,6 +289,7 @@ button:focus-visible{outline:3px solid var(--coin);outline-offset:2px}
     <section class="stage" id="stage">
       <canvas id="scene" aria-label="Maqueta 3D con la ruta de la mercancía"></canvas>
       <div id="labels"></div>
+      <div class="logo-nico" role="img" aria-label="Logo Nico"><span class="tile"><span>n</span></span><span class="word"><span class="i">ı<span class="dot"></span></span><span>co</span></span></div>
 
       <div class="semaforo" aria-label="Semáforo: quién asume coste, riesgo y seguro en este tramo">
         <div class="sem-box">
@@ -1087,10 +1097,10 @@ function plainCloudsCanvas(){return cloudCanvas(900,300,(g,puff,rr)=>{
   [[190,120,1.15],[520,80,0.85],[700,190,0.7]].forEach(([cx,cy,sc])=>{for(let k=0;k<9;k++) puff(cx+(rr()-.5)*220*sc,cy+(rr()-.5)*40*sc,(45+rr()*40)*sc,0.75);});});}
 function skyPlane(){const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({transparent:true,depthWrite:false,opacity:0.92}));
   m.renderOrder=-10; m.frustumCulled=false; camera.add(m); return m;}
-const nicoPlane=skyPlane(), leftClouds=skyPlane();
+const nicoPlane=skyPlane(), leftClouds=skyPlane(); nicoPlane.visible=false;
 const skyBase={nx:0,ny:0,lx:0,ly:0,w:1,h:1};
 function buildNico(){
-  [[nicoPlane,nicoCanvas()],[leftClouds,plainCloudsCanvas()]].forEach(([m,c])=>{const old=m.material.map; m.material.map=new THREE.CanvasTexture(c); m.material.needsUpdate=true; if(old) old.dispose();});
+  [[leftClouds,plainCloudsCanvas()]].forEach(([m,c])=>{const old=m.material.map; m.material.map=new THREE.CanvasTexture(c); m.material.needsUpdate=true; if(old) old.dispose();});
 }
 function placeSkyPlanes(){
   const h=2*SKY_D*Math.tan(camera.fov*Math.PI/360), w=h*camera.aspect;
