@@ -104,6 +104,9 @@ button:focus-visible{outline:3px solid var(--coin);outline-offset:2px}
 .logo-nico .dot{position:absolute;left:50%;top:.04em;width:.24em;height:.24em;margin-left:-.12em;border-radius:50%;background:#FF5A36}
 .score{top:64px!important}
 .answerbtn{top:124px!important}
+.fs-hint{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:10px;background:var(--ink);color:#fff;border-radius:999px;padding:9px 18px;font-weight:700;font-size:14.5px;box-shadow:0 6px 20px rgba(31,42,68,.3);pointer-events:none;animation:hintIn .4s ease-out}
+.fs-hint svg{width:20px;height:20px;flex:none}
+@keyframes hintIn{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
 .stage.clean #labels,.stage.clean #toastHost,.stage.clean .stepbar{display:none}
 
 /* Semáforo */
@@ -251,6 +254,7 @@ button:focus-visible{outline:3px solid var(--coin);outline-offset:2px}
 <body>
 
 
+<div class="fs-hint" id="fsHint" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Haz clic en cualquier sitio para ver en pantalla completa</div>
 <div class="app">
   <header class="top">
     <div class="brand">
@@ -279,7 +283,7 @@ button:focus-visible{outline:3px solid var(--coin);outline-offset:2px}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path id="sndWave" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
     </button>
     <button class="iconbtn" id="btnFull" title="Pantalla completa" aria-label="Pantalla completa">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path id="fsIcon" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
     </button>
   </header>
 
@@ -648,7 +652,18 @@ function beep(kind){
   }catch(e){}
 }
 $('btnSound').addEventListener('click',()=>{st.sound=!st.sound;$('sndWave').style.display=st.sound?'':'none';$('btnSound').title=st.sound?'Sonido activado':'Sonido desactivado';});
-$('btnFull').addEventListener('click',()=>{try{ if(document.fullscreenElement) document.exitFullscreen(); else (document.documentElement.requestFullscreen?document.documentElement.requestFullscreen():Promise.reject()).catch(()=>{}); }catch(e){}});
+/* Pantalla completa: se activa con el primer clic, toque o tecla en la página (los navegadores no permiten activarla sola). */
+const FS_ON='M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5', FS_OFF='M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5';
+const canFS=!!(document.documentElement.requestFullscreen&&document.fullscreenEnabled);
+function enterFS(){ try{ if(!document.fullscreenElement) return document.documentElement.requestFullscreen().catch(()=>{}); }catch(e){} }
+function exitFS(){ try{ if(document.fullscreenElement) document.exitFullscreen().catch(()=>{}); }catch(e){} }
+function syncFS(){ const on=!!document.fullscreenElement; $('fsIcon').setAttribute('d',on?FS_OFF:FS_ON); $('btnFull').title=on?'Salir de pantalla completa (Esc)':'Pantalla completa'; $('btnFull').setAttribute('aria-label',$('btnFull').title); if(on) $('fsHint').hidden=true; }
+document.addEventListener('fullscreenchange',syncFS);
+$('btnFull').addEventListener('click',e=>{ e.stopPropagation(); firstDone=true; $('fsHint').hidden=true; document.fullscreenElement?exitFS():enterFS(); });
+let firstDone=false;
+function firstGesture(e){ if(firstDone) return; firstDone=true; $('fsHint').hidden=true; ['pointerdown','keydown'].forEach(t=>document.removeEventListener(t,firstGesture,true)); if(e.key==='Escape') return; enterFS(); }
+if(canFS){ $('fsHint').hidden=false; setTimeout(()=>{ $('fsHint').hidden=true; },9000); ['pointerdown','keydown'].forEach(t=>document.addEventListener(t,firstGesture,true)); }
+else { $('btnFull').hidden=true; }
 
 /* ===================== 3D: DIORAMA ===================== */
 if(typeof THREE==='undefined'){
