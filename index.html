@@ -582,6 +582,10 @@ function payer(code,item){ if(item==='seguro') return INC[code].ins? V : null; r
 function stepPayer(code,s){ return payer(code,STEPS[s].item); }
 function costEnd(code){ let e=-1; for(let s=0;s<STEPS.length;s++) if(stepPayer(code,s)===V) e=s; return e; }
 function riskOwner(code,s){ if(INC[code].imp&&s===8) return C; return s<=INC[code].risk? V : C; }
+/* Paso 8: primero el camión va de la terminal a la aduana (sigue el tramo anterior) y luego se despacha */
+const toCustoms=()=>st.step===8&&st.t<0.7;
+function liveRisk(code){ return toCustoms()? riskOwner(code,7) : riskOwner(code,st.step); }
+function livePay(code){ return toCustoms()? (payer(code,'impo')===V? V : payer(code,'post')) : stepPayer(code,st.step); }
 function insActive(code,s){ const d=INC[code]; return !!d.ins && s>d.risk && s<=d.insEnd; }
 const WHO={V:'vendedor',C:'comprador'}, WHO_U={V:'Vendedor',C:'Comprador'};
 const isCPT=c=>c==='CPT'||c==='CIP';
@@ -1275,7 +1279,7 @@ function setLight(id,cls,txt,sub){
 }
 function renderLights(){
   const code=st.inc, s=st.step, rv=reveal();
-  const p=stepPayer(code,s), r=riskOwner(code,s);
+  const p=livePay(code), r=liveRisk(code);
   if(rv.cost(s)) setLight('lCost',p===V?'s':'b',p,WHO_U[p]); else setLight('lCost','q','?','Por descubrir');
   if(rv.risk) setLight('lRisk',r===V?'s':'b',r,WHO_U[r]); else setLight('lRisk','q','?','Por descubrir');
   if(!rv.ins) setLight('lIns','q','?','Por descubrir');
@@ -1285,7 +1289,7 @@ function renderLights(){
 
 /* ===================== APLICAR ESCENA ===================== */
 const COL={V:new THREE.Color('#2a6de0'),C:new THREE.Color('#f07c12'),N:new THREE.Color('#d6dae3')};
-const crateTint=new THREE.Color('#d6dae3');
+const crateTint=new THREE.Color('#d6dae3'); let lastPhase=false;
 const flagCol=p=>p===V?'#2a6de0':'#f07c12';
 function applyScene(time){
   const m=curMode(); setSceneMode(m);
@@ -1305,7 +1309,8 @@ function applyScene(time){
   crate.position.set(o.c.x,o.c.y+(st.step===6?bob:0),o.c.z);
   crate.rotation.y=o.spin*Math.PI*2;
   lastInside=o.inside;
-  const owner=riskOwner(code,st.step);
+  const owner=liveRisk(code);
+  const ph=toCustoms(); if(ph!==lastPhase){lastPhase=ph; renderLights();}
   crateTint.lerp(rv.risk?COL[owner]:COL.N,0.14); crateMat.color.copy(crateTint);
   const big=o.inside?2.3:1;
   ring.visible=rv.risk; ring.material.color.copy(rv.risk?COL[owner]:COL.N);
