@@ -64,6 +64,8 @@ button:focus-visible{outline:3px solid var(--coin);outline-offset:2px}
 .modesel button+button{border-left:2px solid rgba(31,42,68,.15)}
 .modesel button[aria-pressed="true"]{background:var(--main);color:#fff}
 .modesel button:disabled{opacity:.35;cursor:not-allowed}
+.destsel button{font-size:14px;padding:6px 10px}
+.destsel button[aria-pressed="true"]{background:#2e8b57}
 .iconbtn{width:40px;height:40px;display:grid;place-items:center;background:var(--paper);border:2px solid var(--ink);border-radius:11px;box-shadow:0 3px 0 var(--ink);cursor:pointer;padding:0}
 .iconbtn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
 .iconbtn svg{width:20px;height:20px}
@@ -96,12 +98,11 @@ button:focus-visible{outline:3px solid var(--coin);outline-offset:2px}
 .lbl.cost{background:var(--coin);border-color:transparent}
 .lbl.ins{background:var(--shield);color:#fff;border-color:transparent}
 .lbl.place{font-size:13.5px;padding:2px 9px}
-.logo-nico{position:absolute;right:14px;top:12px;z-index:3;display:flex;align-items:center;gap:3px;padding:5px 10px 5px 7px;border-radius:12px;background:rgba(255,255,255,.72);box-shadow:0 2px 10px rgba(31,42,68,.12);font-family:'Fredoka',"Arial Rounded MT Bold",system-ui,sans-serif;font-weight:600;line-height:1;pointer-events:none;user-select:none}
-.logo-nico .tile{width:34px;height:34px;flex:none;border-radius:10px;background:#15151E;display:flex;align-items:center;justify-content:center;margin-top:3px}
-.logo-nico .tile span{font-size:29px;color:#fff;margin-top:-4px}
-.logo-nico .word{display:flex;align-items:baseline;font-size:35px;letter-spacing:-1px;color:#15151E}
+.logo-nico{position:absolute;right:14px;top:12px;z-index:3;display:flex;align-items:center;gap:0;padding:5px 10px 6px 10px;border-radius:12px;background:rgba(255,255,255,.72);box-shadow:0 2px 10px rgba(31,42,68,.12);font-family:'Fredoka',"Arial Rounded MT Bold",system-ui,sans-serif;font-weight:600;line-height:1;pointer-events:none;user-select:none}
+.logo-nico .word{display:flex;align-items:baseline;font-size:31.5px;letter-spacing:-.5px;color:#15151E}
 .logo-nico .i{position:relative;display:inline-block}
 .logo-nico .dot{position:absolute;left:50%;top:.04em;width:.24em;height:.24em;margin-left:-.12em;border-radius:50%;background:#FF5A36}
+.logo-nico svg{width:.61em;height:.66em;margin-left:.04em;flex-shrink:0}
 .score{top:64px!important}
 .answerbtn{top:124px!important}
 .fs-hint{position:fixed;left:50%;top:42%;transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:10px;background:var(--ink);color:#fff;border-radius:999px;padding:12px 22px;font-weight:700;font-size:17px;max-width:calc(100% - 32px);text-align:center;box-shadow:0 6px 20px rgba(31,42,68,.3);pointer-events:none;animation:hintIn .4s ease-out}
@@ -275,6 +276,11 @@ button:focus-visible{outline:3px solid var(--coin);outline-offset:2px}
       <button data-m="avion" aria-pressed="false" title="Avión">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 15.5v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V8.5l-8 5v2l8-2.5V18l-2.2 1.6V21l3.7-1 3.7 1v-1.4L13 18v-5z"/></svg>Avión</button>
     </div>
+    <div class="modesel destsel" role="group" aria-label="Lugar de destino convenido" id="destSel" hidden>
+      <span>Lugar de destino</span>
+      <button data-d="alm" aria-pressed="true" title="Entrega en el almacén del comprador">Almacén del comprador</button>
+      <button data-d="term" aria-pressed="false" title="Entrega en el puerto o terminal de destino">Puerto/terminal de destino</button>
+    </div>
     <div class="tabs" role="group" aria-label="Modo">
       <button id="tabExplain" aria-pressed="true">Explicación</button>
       <button id="tabGame" aria-pressed="false">Juego</button>
@@ -293,7 +299,7 @@ button:focus-visible{outline:3px solid var(--coin);outline-offset:2px}
     <section class="stage" id="stage">
       <canvas id="scene" aria-label="Maqueta 3D con la ruta de la mercancía"></canvas>
       <div id="labels"></div>
-      <div class="logo-nico" role="img" aria-label="Logo Nico"><span class="tile"><span>n</span></span><span class="word"><span class="i">ı<span class="dot"></span></span><span>co</span></span></div>
+      <div class="logo-nico" role="img" aria-label="Logo Nico"><span class="word"><span>n</span><span class="i">ı<span class="dot"></span></span><span>c</span><svg viewBox="9 5 92 100" aria-hidden="true"><path d="M55 8 L98 30 L55 52 L12 30 Z" style="fill:#FF5A36;stroke:#FF5A36;stroke-width:5;stroke-linejoin:round"/><path d="M12 30 L55 52 L55 102 L12 80 Z" style="fill:#15151E;stroke:#15151E;stroke-width:5;stroke-linejoin:round"/><path d="M55 52 L98 30 L98 80 L55 102 Z" style="fill:#4A4A5A;stroke:#4A4A5A;stroke-width:5;stroke-linejoin:round"/></svg></span></div>
 
       <div class="semaforo" aria-label="Semáforo: quién asume coste, riesgo y seguro en este tramo">
         <div class="sem-box">
@@ -454,7 +460,7 @@ const DESCS={
 const pick=(x,m)=>typeof x==='string'?x:x[m];
 const PAY_ORDER=['carga','pre','expo','desc_o','bordo','flete','desc_d','impo','post','desc_c'];
 const GROUPS={E:'Salida',F:'Transporte principal no pagado',C:'Transporte principal pagado',D:'Llegada'};
-const PLACES=['En el almacén del vendedor, sin cargar','En el almacén del vendedor, ya cargada en el vehículo del comprador','Al ponerla a disposición del porteador del comprador en la terminal de salida','Al costado del buque, en el muelle del puerto de origen','A bordo del buque, en el puerto de origen','En la terminal de destino, ya descargada','En el almacén del comprador, lista para descargar','Al entregarla al primer porteador, en el almacén del vendedor','En el almacén del comprador, ya descargada'];
+const PLACES=['En el almacén del vendedor, sin cargar','En el almacén del vendedor, ya cargada en el vehículo del comprador','Al ponerla a disposición del porteador del comprador en la terminal de salida','Al costado del buque, en el muelle del puerto de origen','A bordo del buque, en el puerto de origen','En la terminal de destino, ya descargada','En el almacén del comprador, lista para descargar','Al entregarla al primer porteador, en el almacén del vendedor','En el almacén del comprador, ya descargada','En la terminal de destino, sobre el vehículo que llega y lista para descargar','En la terminal de destino, despachada de importación'];
 
 const INC={
  EXW:{g:'E',en:'Ex Works',es:'En fábrica',sea:false,pay:'CCCCCCCCCC',risk:-1,place:()=>'almacén del vendedor',rp:0,tA:'C',tB:'T',
@@ -534,6 +540,39 @@ const INC={
    clave:'Máxima obligación para el vendedor.',
    sum:'El vendedor lo paga todo, incluso los aranceles de importación, hasta el almacén del comprador.'}
 };
+/* Lugar de destino convenido en DAP, DPU y DDP */
+const NOTE_IMPO_C='Del comprador, en coste y en riesgo: la entrega ya se hizo en la terminal de destino.';
+const NOTE_POST_C='Del comprador: el vendedor ya entregó en la terminal de destino. El último camión lo contrata y lo paga él.';
+const DEST_TERM={
+ DAP:{pay:'VVVVVVCCCC',risk:6,rp:9,imp:false,tB:'C',place:m=>MODES[m].termD,
+   entrega:m=>`En el lugar de destino convenido (aquí, ${MODES[m].termD}), sobre el vehículo que llega y lista para descargar.`,
+   costes:'Todo el transporte hasta la terminal de destino. La descarga, la importación y el último camión son del comprador.',
+   extra:['Lugar de entrega','Con entrega en la terminal de destino, el vendedor entrega sobre el medio de transporte que llega, sin descargar. Desde ahí todo es del comprador: descarga, importación y camión hasta su almacén. Por eso la mercancía sigue naranja todo el camino.'],
+   clave:'El vendedor lleva la mercancía hasta la terminal de destino, sin descargar.',
+   sum:'El vendedor paga y arriesga hasta la terminal de destino y la deja sobre el vehículo, lista para descargar. Desde ahí, todo es del comprador.',
+   nt:{6:'El vendedor paga y arriesga el transporte principal. Al llegar a la terminal de destino, sobre el vehículo y lista para descargar, se produce la entrega DAP y pasa el riesgo.',7:'La descarga en la terminal ya es del comprador: en DAP el vendedor entrega sin descargar.',8:'La importación (trámites y aranceles) es del comprador, en coste y en riesgo.',9:'Este camión lo contrata y lo paga el comprador.',10:'Descarga el comprador.'},
+   inote:{desc_d:'Del comprador: en DAP el vendedor entrega sobre el vehículo que llega, sin descargar.',impo:NOTE_IMPO_C,post:NOTE_POST_C,desc_c:'Del comprador.'}},
+ DPU:{pay:'VVVVVVVCCC',risk:7,rp:5,imp:false,tB:'C',place:m=>MODES[m].termD,
+   entrega:m=>`En el lugar de destino convenido (aquí, ${MODES[m].termD}), ya descargada: el vendedor descarga la mercancía allí.`,
+   costes:'Todo el transporte hasta la terminal de destino y la descarga allí. La importación y el último camión son del comprador.',
+   extra:['Lugar de entrega','Con entrega en la terminal de destino, el vendedor descarga allí y en ese momento pasa el riesgo. Desde ahí todo es del comprador: importación y camión hasta su almacén.'],
+   clave:'Único Incoterm en el que el vendedor descarga en destino: aquí, en la terminal.',
+   sum:'El vendedor paga y arriesga hasta la terminal de destino y además descarga la mercancía allí. Desde ahí, todo es del comprador.',
+   nt:{7:'Entrega DPU en la terminal de destino: el vendedor descarga la mercancía y, ya descargada, pasa el riesgo. Es el único Incoterm con descarga a cargo del vendedor.',8:'La importación (trámites y aranceles) es del comprador, en coste y en riesgo.',9:'Este camión lo contrata y lo paga el comprador.',10:'Descarga el comprador en su almacén.'},
+   inote:{desc_d:'En DPU descarga el vendedor: aquí, en la terminal de destino. Es el único Incoterm en que está obligado a descargar.',impo:NOTE_IMPO_C,post:NOTE_POST_C,desc_c:'Del comprador: la entrega DPU ya se hizo en la terminal.'}},
+ DDP:{pay:'VVVVVVVVCC',risk:8,rp:10,imp:false,tB:'C',place:m=>MODES[m].termD,
+   entrega:m=>`En el lugar de destino convenido (aquí, ${MODES[m].termD}), con la mercancía despachada de importación.`,
+   costes:'Todo hasta la terminal de destino, incluidos los trámites y aranceles de importación. El último camión y la descarga final son del comprador.',
+   extra:['Lugar de entrega','Con entrega en la terminal de destino, el vendedor también despacha la importación y paga los aranceles. Después, el camión hasta el almacén es del comprador.'],
+   clave:'Máxima obligación para el vendedor, hasta la terminal de destino.',
+   sum:'El vendedor lo paga todo hasta la terminal de destino, incluso los aranceles de importación. Desde ahí, el último camión es del comprador.',
+   nt:{7:'Transbordo en la terminal: lo paga y lo arriesga el vendedor.',8:'En DDP el vendedor hace también el despacho de importación y paga los aranceles. Despachada, se produce la entrega en la terminal de destino y pasa el riesgo.',9:'Este camión lo contrata y lo paga el comprador.',10:'Descarga el comprador.'},
+   inote:{desc_d:'La paga el vendedor: todavía no ha entregado.',post:NOTE_POST_C,desc_c:'Del comprador.'}}
+};
+const DEST_ALM={};
+Object.keys(DEST_TERM).forEach(c=>{const a={nt:null,inote:null,imp:!!INC[c].imp};Object.keys(DEST_TERM[c]).forEach(k=>{if(!(k in a)) a[k]=INC[c][k];});DEST_ALM[c]=a;});
+const hasDest=c=>c in DEST_TERM;
+function applyDest(){ Object.keys(DEST_TERM).forEach(c=>Object.assign(INC[c],st.dest==='term'?DEST_TERM[c]:DEST_ALM[c])); }
 const ORDER=['EXW','FCAF','FCAT','FAS','FOB','CFR','CIF','CPT','CIP','DAP','DPU','DDP'];
 const CONFUSE={EXW:['FCAF','FCAT','FAS'],FCAF:['EXW','FCAT','CPT'],FCAT:['FCAF','CPT','FAS'],FAS:['FOB','FCAT','CFR'],FOB:['FAS','CFR','FCAT'],CFR:['CIF','FOB','CPT'],CIF:['CFR','CIP','FOB'],CPT:['CIP','FCAF','CFR'],CIP:['CPT','CIF','DAP'],DAP:['DPU','DDP','CPT'],DPU:['DAP','DDP','CIP'],DDP:['DAP','DPU','EXW']};
 const disp=c=>INC[c].name||c;
@@ -557,6 +596,7 @@ const ITEM_IDS=['carga','pre','expo','desc_o','bordo','flete','seguro','desc_d',
 
 function itemNote(code,item){
   const d=INC[code];
+  if(d.inote && item in d.inote) return d.inote[item];
   if(isCPT(code)){
     if(item==='carga') return 'El vendedor carga la mercancía en el camión del transportista que ha contratado (primer porteador). En ese momento pasa el riesgo.';
     if(item==='pre') return 'Lo paga el vendedor, pero el riesgo ya es del comprador.';
@@ -600,7 +640,7 @@ function stepNote(code,s,m){
    DPU:{8:'La importación (trámites y aranceles) es del comprador, en coste y en riesgo: mientras se despacha, el riesgo es suyo (art. B3).',9:'Despachada la mercancía, se reanuda el transporte y el riesgo vuelve al vendedor.',10:'Entrega DPU: el vendedor descarga la mercancía en el almacén del comprador y, ya descargada, pasa el riesgo. Es el único Incoterm con descarga a cargo del vendedor. En 2020 sustituye a DAT.'},
    DDP:{8:'En DDP el vendedor paga también el despacho de importación y los aranceles.',9:'Entrega DDP: el riesgo pasa en el almacén del comprador, con la mercancía despachada y lista para descargar.'}
   };
-  let n=(N[code]&&N[code][s])||'';
+  let n=(d.nt && s in d.nt)? d.nt[s] : ((N[code]&&N[code][s])||'');
   if(!n && s===7 && (code==='CFR'||code==='CIF')) n=itemNote(code,'desc_d');
   if(!n && s===7 && isCPT(code)) n=itemNote(code,'desc_d');
   if(!n && (s===4||s===5||s===6) && d.g==='D') n=`Transbordo en la terminal: el riesgo sigue siendo del vendedor.`;
@@ -610,7 +650,7 @@ function stepNote(code,s,m){
 function gapText(code){ const d=INC[code]; if(isCPT(code)) return 'El riesgo pasa con el primer porteador en el almacén del vendedor, pero el vendedor paga el transporte hasta el almacén del comprador.'; if(d.g==='C') return 'Grupo C: el riesgo pasa en origen, pero el vendedor paga el transporte hasta destino.'; if(code==='FCAF') return 'El riesgo pasa al cargar en la fábrica, pero el vendedor aún paga la exportación.'; return ''; }
 
 /* ===================== ESTADO ===================== */
-const st={inc:'CPT',mm:'tren',step:0,t:0,playing:false,hold:0,speed:1,follow:true,tab:'now',sound:true,game:null,clean:false};
+const st={inc:'CPT',mm:'tren',dest:'alm',step:0,t:0,playing:false,hold:0,speed:1,follow:true,tab:'now',sound:true,game:null,clean:false};
 const SPEEDS=[1,1.5,2,0.75];
 const $=id=>document.getElementById(id);
 const curMode=()=>INC[st.inc].sea?'barco':st.mm;
@@ -631,6 +671,11 @@ const picker=$('picker');
   picker.addEventListener('click',e=>{const b=e.target.closest('.chip'); if(!b||b.disabled) return; selectInc(b.dataset.inc,true);});
 })();
 $('modeSel').addEventListener('click',e=>{const b=e.target.closest('button'); if(!b||b.disabled) return; st.mm=b.dataset.m; restart(); beep('coin');});
+$('destSel').addEventListener('click',e=>{const b=e.target.closest('button'); if(!b||b.disabled) return; st.dest=b.dataset.d; applyDest(); restart(); beep('coin');});
+function renderDestSel(){
+  const el=$('destSel'), on=hasDest(st.inc); el.hidden=!on; if(!on) return;
+  [...el.querySelectorAll('button')].forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.d===st.dest)); b.disabled=!!st.game;});
+}
 function renderModeSel(){
   const sea=INC[st.inc].sea, m=curMode();
   [...$('modeSel').querySelectorAll('button')].forEach(b=>{
@@ -772,6 +817,32 @@ function customs(x){
   return piv;
 }
 const barO=customs(-58), barD=customs(58);
+/* Agentes de aduanas en el tejado: azul si el trámite es del vendedor, naranja si es del comprador */
+function agent(x,ph){
+  const g=new THREE.Group(); g.position.set(x+2,3.25,-7.6); g.scale.setScalar(0.5); scene.add(g);
+  const parts=[];
+  parts.push(cyl(0.62,0.82,2.2,14,'#2a6de0',0,1.1,0,g));
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.62,16,12),M('#f1d3b8')); head.position.y=2.85; head.castShadow=true; g.add(head);
+  [-0.21,0.21].forEach(ex=>{const e=new THREE.Mesh(new THREE.SphereGeometry(0.08,8,6),M('#1f2a44'));e.position.set(ex,2.9,0.56);g.add(e);});
+  parts.push(cyl(0.64,0.64,0.28,16,'#2a6de0',0,3.32,0,g)); parts.push(box(0.8,0.08,0.45,'#2a6de0',0,3.2,0.6,g));
+  const low=new THREE.Group(); low.position.set(-0.78,1.9,0); low.rotation.z=-0.12; g.add(low); parts.push(cyl(0.14,0.14,1.1,8,'#2a6de0',0,-0.5,0,low));
+  const arm=new THREE.Group(); arm.position.set(0.74,2.05,0); g.add(arm);
+  parts.push(cyl(0.14,0.14,1.2,8,'#2a6de0',0,0.55,0,arm));
+  const paper=box(0.9,1.1,0.06,'#ffffff',0.15,1.55,0.1,arm);
+  [0.25,0,-0.25].forEach(dy=>box(0.6,0.07,0.02,'#9aa6b8',0,dy,0.045,paper));
+  g.userData={parts,arm,paper,ph,col:''};
+  return g;
+}
+const agentO=agent(-58,0), agentD=agent(58,1.7);
+function updateAgents(code,time){
+  [[agentO,payer(code,'expo')],[agentD,payer(code,'impo')]].forEach(([a,w])=>{
+    const u=a.userData, col=w===V?'#2a6de0':'#f07c12';
+    if(u.col!==col){u.col=col; u.parts.forEach(p=>p.material=M(col));}
+    u.arm.rotation.z=-0.35+Math.sin(time*5+u.ph)*0.4;
+    u.paper.rotation.y=Math.sin(time*7+u.ph)*0.25;
+    a.position.y=3.25+Math.abs(Math.sin(time*2.5+u.ph))*0.12;
+  });
+}
 
 /* --- Decoración --- */
 const CCOL=['#9fb3c8','#b8c4d2','#8fb0a8','#c4ccd6'];
@@ -1219,7 +1290,7 @@ const flagCol=p=>p===V?'#2a6de0':'#f07c12';
 function applyScene(time){
   const m=curMode(); setSceneMode(m);
   const o=cs(st.step,st.t,m), code=st.inc, rv=reveal(), d=INC[code];
-  truckA.position.x=o.tA; truckB.position.x=o.tB;
+  truckA.position.x=o.tA; truckB.position.x=o.tB; updateAgents(code,time);
   truckA.userData.cab.material=M(TRUCK_COL[d.tA]); truckB.userData.cab.material=M(TRUCK_COL[d.tB]);
   [truckA,truckB].forEach(tk=>{const dd=tk.position.x-tk.userData.lastX;tk.userData.wheels.forEach(w=>w.rotation.y-=dd/0.46);tk.userData.lastX=tk.position.x;});
   const bob=m==='barco'?Math.sin(time*1.5)*0.07:0;
@@ -1332,7 +1403,7 @@ function renderBar(){
   $('stepTitle').textContent=stepTitle(s,curMode());
   [...picker.querySelectorAll('.chip')].forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.inc===st.inc&&rv.name));b.disabled=!!st.game;});
 }
-function refresh(){renderBar();renderSide();renderLights();renderModeSel();updatePlayIcon();}
+function refresh(){renderBar();renderSide();renderLights();renderModeSel();renderDestSel();updatePlayIcon();}
 
 /* ===================== AVISOS ===================== */
 let toastTimer=null;
@@ -1402,7 +1473,7 @@ const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()
 const randMode=()=>Math.random()<0.5?'tren':'avion';
 
 function buildQuestions(code){
-  const d=INC[code], Q={}, n=disp(code), m=curMode(), veh=MODES[m].veh;
+  const d=INC[code], m=curMode(), Q={}, n=hasDest(code)?`${code} [${d.place(m)}]`:disp(code), veh=MODES[m].veh;
   const vc=(id,text,answer,expl)=>({id,text,answer,expl,opts:[{v:V,t:'Vendedor',cls:'s'},{v:C,t:'Comprador',cls:'b'}]});
   const add=(s,q)=>{(Q[s]=Q[s]||[]).push(q);};
   if(code==='FCAF'||code==='EXW') add(0,vc('carga',`¿Quién carga la mercancía en el almacén del vendedor en ${n}?`,payer(code,'carga'),code==='FCAF'?'En FCA en fábrica carga el vendedor. Por eso se diferencia de EXW.':'En EXW el vendedor no está obligado a cargar: lo hace el comprador.'));
@@ -1568,6 +1639,7 @@ try{ window.claude&&window.claude.hot&&window.claude.hot.snapshot&&window.claude
 if(window.claude&&window.claude.hot&&window.claude.hot.ready) window.claude.hot.ready(start); else start((window.claude&&window.claude.hot&&window.claude.hot.data)||{});
 })();
 </script>
+
 
 </body>
 </html>
